@@ -5,15 +5,6 @@ A main challenge in this project is finding appropriate data. The type of data t
 ## High Level Class Structure
 
 ```mermaid
-<<<<<<< HEAD
-graph TD
-household[Household]
-human[Human] --> child[Child] & spouse[Spouse] & head_of_house[Head of House]
-household -->|Includes| human
-head_of_house -->|Married To| spouse
-spouse & head_of_house -->|Raised By| child
-household -->|Owns| vehicle[Vehicle] & housing_property[Housing Property]
-=======
 graph LR;
 household[Household]
 human[Human] --> child[Child] & spouse[Spouse] & head_of_house[Head of House]
@@ -23,7 +14,6 @@ spouse & head_of_house -->|Raised By| child
 
 household -->|Owns| vehicle[Vehicle] & housing_property[Housing Property]
 vehicle & human -->|Cause| claims[Claims]
->>>>>>> 6c5d6d7 (Fixing diagram)
 
 human & vehicle -->|cause| claim[Claims]
 household -->|Has History Of| claim
