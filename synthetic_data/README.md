@@ -5,10 +5,10 @@ A main challenge in this project is finding appropriate data. The type of data t
 ## High Level Class Structure
 
 ```mermaid
-graph LR;
+graph TD;
 household[Household]
-human[Human] --> child[Child] & spouse[Spouse] & head_of_house[Head of House]
-human -->|Members of| household
+human[Human] -->|Subclass Of| child[Child] & spouse[Spouse] & head_of_house[Head of House]
+household --> |includes| child & spouse & head_of_house
 head_of_house -->|Married To| spouse
 spouse & head_of_house -->|Raised By| child
 
