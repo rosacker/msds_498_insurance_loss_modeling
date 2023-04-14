@@ -5,13 +5,14 @@ A main challenge in this project is finding appropriate data. The type of data t
 ## High Level Class Structure
 
 ```mermaid
-graph TD;
+graph TD
 household[Household]
 human[Human] --> child[Child] & spouse[Spouse] & head_of_house[Head of House]
-household <|Members of|-- human
-spouse <|Married To|-- head_of_house
-child <|Raised By|-- spouse & head_of_house
-household --|Owns|> vehicle[Vehicle] & housing_property[Housing Property]
-claims[Claims] <|Cause|-- vehicle & human
+household -->|Includes| human
+head_of_house -->|Married To| spouse
+spouse & head_of_house -->|Raised By| child
+household -->|Owns| vehicle[Vehicle] & housing_property[Housing Property]
+
+human & vehicle -->|cause| claim[Claims]
 
 ```
