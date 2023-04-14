@@ -13,8 +13,6 @@ head_of_house -->|Married To| spouse
 spouse & head_of_house -->|Raised By| child
 
 household -->|Owns| vehicle[Vehicle] & housing_property[Housing Property]
-vehicle & human -->|Cause| claims[Claims]
-
 human & vehicle -->|cause| claim[Claims]
 household -->|Has History Of| claim
 
