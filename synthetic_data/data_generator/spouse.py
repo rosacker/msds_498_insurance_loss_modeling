@@ -5,6 +5,13 @@ from .utils import sig
 from .human import human
 
 class spouse(human):
+  """
+  The least special of the human classes 😝
+  A spouse's age/upbrining score/etc... is mostly determined by the head_of_house.
+  Often the gender will be opposite that of the head_of_house object, but there is a chance to have a gay couple.
+
+  For all other purposes they are a normal human that drives cars and generates claims.
+  """
   def __init__(self, household, so):
     # Pick an age that is slightly lower than the head of house
     age_lowerbound = max(int(so.age/2 + 7), 18)

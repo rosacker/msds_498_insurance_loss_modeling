@@ -3,6 +3,11 @@ from statistics import mean
 from .utils import sig
 
 class claim:
+  """
+  This represents an insurance claim occuring. 
+  An insurance claim must relate to a vehicle object. 
+  It may or may not have a driver (i.e. a car can get hit by hail without anyone actively driving it!)
+  """
   def __init__(self, claim_type, household, vehicle, driver = None):
     self.household = household
     self.vehicle = vehicle

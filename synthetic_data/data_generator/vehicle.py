@@ -3,6 +3,13 @@ from statistics import mean
 from .utils import sig
 
 class vehicle:
+  """
+  The class of object that humans drive in order to generate claims.
+  The value of the vehicle can determine the probability of causing a claim.
+  The value of the vehicle depreciates as the vehicle ages.
+
+  All claims are assigned to exactly 1 vehicle, so a vehicle has a claim history of any claims that it was invovled in.
+  """
   def __init__(self, household, age, vehicle_type):
     self.household = household
     self.age = age

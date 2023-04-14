@@ -8,6 +8,12 @@ from .vehicle import vehicle
 from .claim import claim
 
 class household:
+  """
+  This class is the main object of the process, and is what should be used when simulating data.
+  The class is meant to represent a single household which might have multiple humans, vehicles, and other properties.
+  Initializing this household object will generate a head of household, any other humans/property based upon the head of households age.
+  You can then use move_forward_n_years() to move the hosuehold forward n years worth of experience. This will generate claims, and age other objects in the house.
+  """
   def __init__(self):
     self.inforce = True
     self.child_interest = random.choices([True, False], [0.85, 0.15])[0]

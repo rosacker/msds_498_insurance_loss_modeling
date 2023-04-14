@@ -3,6 +3,11 @@ from statistics import mean
 from .utils import sig
 
 class human:
+  """
+  Humans are one of the main classes of the process.
+  Humans have an "upbringing score" that determines much of their life (occupation, income, driving ability, education, etc...)
+  Each year the human ages up, improving their risk mitigation, potentially causing a wedding 🤵👰, updating their education status, etc...
+  """  
   def __init__(self, household, target_age, target_gender = None, upbringing_score = None):
     self.household = household
     self.age = 0

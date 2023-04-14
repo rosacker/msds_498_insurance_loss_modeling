@@ -3,6 +3,13 @@ from statistics import mean
 from .utils import sig
 
 class housing_property:
+  """
+  This class is really only meant for three purposes.
+  1) It controls if the household has enough beds in order to have more children.
+  2) It controls if the household has enough garages to house all their cars for certain types of claims.
+  3) It is a source of expenses that could prevent other financial decisions.
+  4) It can act as data for predicting loss (it should be correlated with upbringing scores)
+  """
   def __init__(self, property_class, household):
     self.household = household
     self.property_class = property_class

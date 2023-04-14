@@ -5,6 +5,11 @@ from .utils import sig
 from .human import human
 
 class child(human):
+  """
+  A child of the household. This child is a human that doesn't run the household.
+  This means the child can learn to drive once they are old enough, but they won't generate their own spouse or children (i.e. no grand kids!)
+  When children get old enough, they try to leave the household. Ever getting married will also cause them to leave.
+  """
   def __init__(self, house, target_age, upbringing_score):
     super().__init__(household = house, 
                      target_age = target_age, 

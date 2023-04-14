@@ -6,6 +6,16 @@ from .spouse import spouse
 from .child import child
 
 class head_of_house(human):
+  """
+  A very special instance of human.
+  Like other humans, this class can drive vehicles and generate claims.
+  They are special because each household has exactly once head of house, and they generate much of the rest of the household's data.
+  The "upbringing score" of this object effectively decides most things.
+
+  The head of house has an age where they will get married to a spouse at which point the spouse object is created and added to the household.
+  The head of house also controls generating children. 
+  This involves checks to make sure the household income is sufficent, there are enough beds, and there is an interest in having children.
+  """
   def __init__(self, household):
     self.household = household
 
