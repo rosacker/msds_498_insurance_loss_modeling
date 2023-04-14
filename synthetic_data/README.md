@@ -14,5 +14,6 @@ spouse & head_of_house -->|Raised By| child
 household -->|Owns| vehicle[Vehicle] & housing_property[Housing Property]
 
 human & vehicle -->|cause| claim[Claims]
+household -->|Has History Of| claim
 
 ```
