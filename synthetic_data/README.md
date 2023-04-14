@@ -8,7 +8,7 @@ A main challenge in this project is finding appropriate data. The type of data t
 graph TD;
 household[Household]
 human[Human] -->|Subclass Of| child[Child] & spouse[Spouse] & head_of_house[Head of House]
-household --> |includes| child & spouse & head_of_house
+household --> |includes| human
 head_of_house -->|Married To| spouse
 spouse & head_of_house -->|Raised By| child
 
