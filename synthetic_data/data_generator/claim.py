@@ -1,6 +1,7 @@
 import random
 from statistics import mean
 from .utils import sig
+from uuid import uuid4
 
 class claim:
   """
@@ -11,7 +12,15 @@ class claim:
   def __init__(self, claim_type, household, vehicle, driver = None):
     self.household = household
     self.vehicle = vehicle
+    self.vehicle_id = vehicle.id
     self.driver = driver
+
+    if self.driver is not None:
+      self.driver_id = driver.id
+    else:
+      self.driver_id = None
+
+    self.id = uuid4().hex
 
     self.when_occured = self.household.tenure_years
 
@@ -96,6 +105,10 @@ class claim:
   @property
   def summary(self):
     results = {
+        'claim_id': self.id,
+        'vehicle_id': self.vehicle_id,
+        'driver_id': self.driver_id,
+        'driver_claim': self.driver_id is not None,
         'bi_ind': self.bi,
         'pd_ind': self.pd,
         'coll_ind': self.coll,
@@ -103,8 +116,7 @@ class claim:
         'mpc_ind': self.mpc,
         'ers_ind': self.ers,
         'ubi_ind': self.ubi,
-        'claim_age': self.how_old,
-        'driver_claim': self.driver is not None
+        'claim_age': self.how_old
     }
 
     return results

@@ -1,6 +1,7 @@
 import random
 from statistics import mean
 from .utils import sig
+from uuid import uuid4
 
 class human:
   """
@@ -10,6 +11,7 @@ class human:
   """  
   def __init__(self, household, target_age, target_gender = None, upbringing_score = None):
     self.household = household
+    self.id = uuid4().hex
     self.age = 0
     self.tenure_years = 0
     self.driving_experience = 0
@@ -146,6 +148,7 @@ class human:
   @property
   def summary(self):
     results = {
+        'driver_id': self.id,
         'driver_age': self.age,
         'driver_gender': self.gender,
         'driver_tenure': self.tenure_years

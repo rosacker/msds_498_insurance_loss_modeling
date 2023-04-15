@@ -1,6 +1,7 @@
 import random
 from statistics import mean
 from .utils import sig
+from uuid import uuid4
 
 class housing_property:
   """
@@ -12,6 +13,7 @@ class housing_property:
   """
   def __init__(self, property_class, household):
     self.household = household
+    self.id = uuid4().hex
     self.property_class = property_class
 
     if property_class == 1:

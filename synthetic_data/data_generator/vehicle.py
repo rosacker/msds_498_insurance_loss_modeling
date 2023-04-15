@@ -1,6 +1,7 @@
 import random
 from statistics import mean
 from .utils import sig
+from uuid import uuid4
 
 class vehicle:
   """
@@ -12,6 +13,7 @@ class vehicle:
   """
   def __init__(self, household, age, vehicle_type):
     self.household = household
+    self.id = uuid4().hex
     self.age = age
     self.years_owned = 0
     self.vehicle_type = vehicle_type
@@ -111,53 +113,53 @@ class vehicle:
   @property
   def summary(self):
     results = {
+        'vehicle_id': self.id,
         'vehicle_age': self.age,
         'vehicle_years_owned': self.years_owned,
         'vehicle_type': self.vehicle_type        
     }
-
     
     claims = self.prior_claims
 
     # Count of claims
     claim_counts = {
-        f'claim_cnt_all_{age}': len([x for x in claims if x.how_old == age])
+        f'vehicle_claim_cnt_all_{age}': len([x for x in claims if x.how_old == age])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_bi_{age}': len([x for x in claims if x.how_old == age and x.bi == 1])
+        f'vehicle_claim_cnt_bi_{age}': len([x for x in claims if x.how_old == age and x.bi == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_pd_{age}': len([x for x in claims if x.how_old == age and x.pd == 1])
+        f'vehicle_claim_cnt_pd_{age}': len([x for x in claims if x.how_old == age and x.pd == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_coll_{age}': len([x for x in claims if x.how_old == age and x.coll == 1])
+        f'vehicle_claim_cnt_coll_{age}': len([x for x in claims if x.how_old == age and x.coll == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_comp_{age}': len([x for x in claims if x.how_old == age and x.comp == 1])
+        f'vehicle_claim_cnt_comp_{age}': len([x for x in claims if x.how_old == age and x.comp == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_ers_{age}': len([x for x in claims if x.how_old == age and x.ers == 1])
+        f'vehicle_claim_cnt_ers_{age}': len([x for x in claims if x.how_old == age and x.ers == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_ubi_{age}': len([x for x in claims if x.how_old == age and x.ubi == 1])
+        f'vehicle_claim_cnt_ubi_{age}': len([x for x in claims if x.how_old == age and x.ubi == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
@@ -165,14 +167,14 @@ class vehicle:
     # Time Since Claim
     min_with_none = lambda x: min(x) if len(x) > 0 else None
     claim_counts = {
-        f'claim_time_since_all': min_with_none([x.how_old for x in claims if x.how_old <= 15]),
-        f'claim_time_since_bi': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.bi == 1]),
-        f'claim_time_since_pd': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.pd == 1]),
-        f'claim_time_since_comp': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.comp == 1]),
-        f'claim_time_since_coll': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.coll == 1]),
-        f'claim_time_since_mpc': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.mpc == 1]),
-        f'claim_time_since_ers': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.ers == 1]),
-        f'claim_time_since_ubi': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.ubi == 1])
+        f'vehicle_claim_time_since_all': min_with_none([x.how_old for x in claims if x.how_old <= 15]),
+        f'vehicle_claim_time_since_bi': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.bi == 1]),
+        f'vehicle_claim_time_since_pd': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.pd == 1]),
+        f'vehicle_claim_time_since_comp': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.comp == 1]),
+        f'vehicle_claim_time_since_coll': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.coll == 1]),
+        f'vehicle_claim_time_since_mpc': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.mpc == 1]),
+        f'vehicle_claim_time_since_ers': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.ers == 1]),
+        f'vehicle_claim_time_since_ubi': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.ubi == 1])
     }
     results.update(**claim_counts)
 

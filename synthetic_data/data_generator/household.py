@@ -1,5 +1,7 @@
 import random
 from statistics import mean
+from uuid import uuid4
+
 from .utils import sig
 
 from .head_of_house import head_of_house
@@ -15,6 +17,7 @@ class household:
   You can then use move_forward_n_years() to move the hosuehold forward n years worth of experience. This will generate claims, and age other objects in the house.
   """
   def __init__(self):
+    self.id = uuid4().hex
     self.inforce = True
     self.child_interest = random.choices([True, False], [0.85, 0.15])[0]
     self.children = []
@@ -157,43 +160,43 @@ class household:
 
     # Count of claims
     claim_counts = {
-        f'claim_cnt_all_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age])
+        f'household_claim_cnt_all_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_bi_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.bi == 1])
+        f'household_claim_cnt_bi_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.bi == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_pd_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.pd == 1])
+        f'household_claim_cnt_pd_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.pd == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_coll_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.coll == 1])
+        f'household_claim_cnt_coll_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.coll == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_comp_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.comp == 1])
+        f'household_claim_cnt_comp_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.comp == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_ers_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.ers == 1])
+        f'household_claim_cnt_ers_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.ers == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
 
     claim_counts = {
-        f'claim_cnt_ubi_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.ubi == 1])
+        f'household_claim_cnt_ubi_{age}': len([x for x in self.claims if x.driver_in_force and x.how_old == age and x.ubi == 1])
         for age in range(1, 16)
     }
     results.update(**claim_counts)
@@ -201,18 +204,33 @@ class household:
     # Time Since Claim
     min_with_none = lambda x: min(x) if len(x) > 0 else None
     claim_counts = {
-        f'claim_time_since_all': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15]),
-        f'claim_time_since_bi': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.bi == 1]),
-        f'claim_time_since_pd': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.pd == 1]),
-        f'claim_time_since_comp': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.comp == 1]),
-        f'claim_time_since_coll': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.coll == 1]),
-        f'claim_time_since_mpc': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.mpc == 1]),
-        f'claim_time_since_ers': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.ers == 1]),
-        f'claim_time_since_ubi': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.ubi == 1])
+        f'household_claim_time_since_all': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15]),
+        f'household_claim_time_since_bi': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.bi == 1]),
+        f'household_claim_time_since_pd': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.pd == 1]),
+        f'household_claim_time_since_comp': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.comp == 1]),
+        f'household_claim_time_since_coll': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.coll == 1]),
+        f'household_claim_time_since_mpc': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.mpc == 1]),
+        f'household_claim_time_since_ers': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.ers == 1]),
+        f'household_claim_time_since_ubi': min_with_none([x.how_old for x in self.claims if x.driver_in_force and x.how_old <= 15 and x.ubi == 1])
     }
     results.update(**claim_counts)
 
     return results
+
+  @property
+  def summary_per_vehicle(self):
+    results = self.summary
+    claims_info = results.pop('claims_info')
+    vehicle_info = results.pop('vehicle_info')
+
+    summary = [dict(results, 
+                    **x,
+                    vehicle_claims = [y for y in claims_info if y['vehicle_id'] == x['vehicle_id']],
+                    other_claims = [y for y in claims_info if y['vehicle_id'] != x['vehicle_id']],
+                    ) 
+               for x in vehicle_info]
+
+    return summary
 
   @property
   def summary_with_debugging(self):
