@@ -2,6 +2,10 @@
 
 A main challenge in this project is finding appropriate data. The type of data that would ideally be used is not freely available publicly. For that reason, we decided to instead make synthetic data. This folder of the project captures the python scripts used to build that data.
 
+## Entity-Relationship Diagram 
+
+<img src="./ER Diagram for Data.svg">
+
 ## High Level Class Structure
 
 ```mermaid
@@ -17,6 +21,3 @@ human & vehicle -->|cause| claim[Claims]
 household -->|Has History Of| claim
 
 ```
-## Diagram  
-
-![](ER Diagram for Data.svg)
