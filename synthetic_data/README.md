@@ -17,3 +17,6 @@ human & vehicle -->|cause| claim[Claims]
 household -->|Has History Of| claim
 
 ```
+## Diagram  
+
+![](ER Diagram for Data.svg)
