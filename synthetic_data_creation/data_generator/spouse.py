@@ -16,10 +16,7 @@ class spouse(human):
 
     def __init__(self, household, so, years_remaining):
         # Pick an age that is slightly lower than the head of house
-        age_lowerbound = max(int(so.age/2 + 7), 18, so.age - 8)
-
-        print(so.age)
-        print(age_lowerbound)
+        age_lowerbound = max(int(so.age/2 + 7), 18, so.age - 10)
         age_upperbound = so.age
         age_mode = so.age-2
 
@@ -30,8 +27,6 @@ class spouse(human):
             target_age = int(target_age)
         else:
             target_age = so.age
-
-        print(target_age)
 
         # Decide if the couple is same or different sex
         straight_couple = random.choices([True, False], weights=[0.9, 0.1])[0]

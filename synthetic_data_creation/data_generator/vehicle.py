@@ -110,6 +110,11 @@ class vehicle:
         if self.comp_cov_ind:
             self.comp_cov = 50
 
+    def move_forward_n_years(self, n):
+        self.age += n
+        self.years_owned += n
+        self.value = self.value * self.depreciation_rate ** n
+
     @property
     def loan_cost(self):
         # assume 5 year loan, monthly payments, with some interest

@@ -26,7 +26,7 @@ class household:
         self.children = []
         self.properties = []
         self.claims = []
-        self.vehicles = [vehicle(self, 15, 'sedan')]
+        self.vehicles = [vehicle(self, 15, 'sedan'), vehicle(self, 3, 'suv')]
         self.significant_other = None
         self.head_of_household = head_of_house(self)
         self.head_of_household.start_life(self)
@@ -60,6 +60,9 @@ class household:
                 self.significant_other.move_forward_n_years(1)
 
             self.head_of_household.move_forward_n_years(1)
+
+            for x in self.vehicles:
+                x.move_forward_n_years(1)
 
             # Update all the tenures
             self.tenure_years += 1

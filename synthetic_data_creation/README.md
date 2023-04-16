@@ -28,17 +28,16 @@ household -->|Has History Of| claim
 - [x] Rebalance relationship between risk scores
 - [x] Add process to determine vehicle preference for each driver
 - [ ] Add process for a household buying cars  
-- [ ] Add process for a household selling cars  
+- [ ] Add process for a household selling/losing cars  
 - [ ] Add process for determining how many miles each person drives  
 - [x] Confirm spouse age process is working right
-- [ ] Add process for agging vehicles
+- [x] Add process for agging vehicles
+- [ ] Add process for populating years own at new business time
 - [ ] Add more vehicle options
-- [ ] Add process for determining which vehicle is driven  
 - [ ] Add process for household picking insurance coverages  
 - [ ] Add "insurance coverage at the time" to claims data  
 - [ ] Write coverage specific logic for determining when claims occur  
 - [ ] Build way to export data to Weights & Bias  
-- [ ] Build way to export data at multiple levels (household, vehicle, all claims, etc)  
-- [ ] Fix apparent defect with some "other vehicle" claims not coming through.  
+- [ ] Build way to export data at multiple levels (household, vehicle, all claims, etc) 
 - [ ] Write metadata on all fields  
 - [ ] Run code profiler and figure out if anything is running too much
