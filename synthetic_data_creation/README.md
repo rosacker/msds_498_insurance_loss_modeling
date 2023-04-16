@@ -21,3 +21,18 @@ human & vehicle -->|cause| claim[Claims]
 household -->|Has History Of| claim
 
 ```
+
+## To Do  
+
+- [ ] Rebalance the driver hazard attribute to be normally distributed  
+- [ ] Add process for a household buying cars  
+- [ ] Add process for a household selling cars  
+- [ ] Add process for determining how many miles each person drives  
+- [ ] Add process for determining which vehicle is driven  
+- [ ] Add process for household picking insurance coverages  
+- [ ] Add "insurance coverage at the time" to claims data  
+- [ ] Write coverage specific logic for determining when claims occur  
+- [ ] Build way to export data to Weights & Bias  
+- [ ] Build way to export data at multiple levels (household, vehicle, all claims, etc)  
+- [ ] Fix apparent defect with some "other vehicle" claims not coming through.  
+- [ ] Write metadata on all fields  
