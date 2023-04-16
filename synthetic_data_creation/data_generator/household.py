@@ -52,9 +52,7 @@ class household:
         if not self.inforce:
             return None
 
-        for i in range(n):
-            self.generate_claims()
-
+        for _ in range(n):
             for x in self.children:
                 x.move_forward_n_years(1)
 
@@ -69,6 +67,8 @@ class household:
                 x.tenure_years += 1
 
             self.household_lapse_check()
+
+            self.generate_claims()
 
             if not self.inforce:
                 return None

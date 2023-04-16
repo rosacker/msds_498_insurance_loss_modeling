@@ -21,6 +21,16 @@ class vehicle:
         self.vehicle_type = vehicle_type
         self.depreciation_rate = 0.95
 
+        self.bi_cov_ind = True
+        self.pd_cov_ind = True
+        self.coll_cov_ind = False
+        self.comp_cov_ind = False
+        self.mpc_cov_ind = False
+        self.ers_cov_ind = False
+        self.ubi_cov_ind = False
+        self.coll_cov = None
+        self.comp_cov = None
+
         if vehicle_type == 'pickup':
             self.build_pickup()
         elif vehicle_type == 'suv':
@@ -34,6 +44,8 @@ class vehicle:
 
         self.purchase_price = self.msrp * self.depreciation_rate ** age
         self.value = self.purchase_price
+
+        self.determine_coverages(first_time = True)
 
     def build_pickup(self):
         self.seats = 3
@@ -84,6 +96,19 @@ class vehicle:
         self.parent_interest = 0.9
         self.protection = 2
         self.hurt_others = 2
+
+    def determine_coverages(self, first_time = False):
+        self.coll_cov_ind = False
+        self.comp_cov_ind = False
+        self.mpc_cov_ind = False
+        self.ers_cov_ind = False
+        self.ubi_cov_ind = False
+
+        if self.coll_cov_ind:
+            self.coll_cov = 50
+        
+        if self.comp_cov_ind:
+            self.comp_cov = 50
 
     @property
     def loan_cost(self):
