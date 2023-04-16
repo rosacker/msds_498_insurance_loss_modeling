@@ -1,4 +1,5 @@
 import random
+from numpy.random import poisson
 from statistics import mean
 from uuid import uuid4
 
@@ -77,9 +78,23 @@ class household:
 
         for key, mileage in mileage.items():
             driver, vehicle, road_type = key
-            self.claims.append(
-                claim('ers', self, vehicle=vehicle, driver=driver))
-            break
+
+            hazards = {
+                'single_car_collision': 0.03 * (mileage/10000),
+                'multi_car_collision': 0.03 * (mileage/10000),
+                'theft': 0.03 * (mileage/10000),
+                'hail': 0.03 * (mileage/10000),
+                'glass': 0.03 * (mileage/10000),
+                'ubi': 0.03 * (mileage/10000),
+                'ers': 0.03 * (mileage/10000)
+            }
+
+            for claim_type, hazard in hazards.items():
+                n = int(poisson(hazard, 1)[0])
+                if n > 0:
+                    for _ in range(n):
+                        self.claims.append(claim(claim_type, self, vehicle=vehicle, driver=driver))
+            
 
     def determine_mileage(self):
         mileage = {
