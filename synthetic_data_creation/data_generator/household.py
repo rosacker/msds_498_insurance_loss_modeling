@@ -304,6 +304,10 @@ class household:
     @property
     def child_count(self):
         return len(self.children)
+    
+    @property
+    def child_count_lt_18(self):
+        return len([x for x in self.children if x.age < 18])
 
     @property
     def annual_income(self):

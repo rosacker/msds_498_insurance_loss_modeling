@@ -3,7 +3,6 @@ from statistics import mean
 from .utils import sig
 from uuid import uuid4
 
-
 class human:
     """
     Humans are one of the main classes of the process.
@@ -22,6 +21,17 @@ class human:
         self.married = False
         self.education = 'uneducated'
         self.job_class = 0
+
+
+        # Assume everyone has a hidden favorite type of car
+        if self.gender == 'm':
+            veh_pref_dist = [0.3, 0.3, 0.1, 0.2, 0.1]
+        elif self.gender == 'f':
+            veh_pref_dist = [0.1, 0.15, 0.35, 0.1, 0.3]
+
+        self.prefered_vehicle = random.choices(
+            ['pickup', 'suv', 'sedan', 'sports car', 'van'],
+            veh_pref_dist)
 
         self.age_licensed = random.choices([16, 17, 18, 19, 20], weights=[
                                            0.7, 0.1, 0.1, 0.05, 0.05])[0]
@@ -45,7 +55,7 @@ class human:
             self.age += 1
 
             if not self.married and self.married_age <= self.age:
-                self.get_married()
+                self.get_married(years_remaining=n - 1 - i)
 
             self.evaluate_education()
             self.evaluate_job()
@@ -134,9 +144,49 @@ class human:
     def leave_household(self):
         return None
 
-    def get_married(self):
+    def get_married(self, years_remaining = 0):
         self.married = True
         self.risk_mitigation_score += 0.15
+
+    def vehicle_interest(self, vehicle):
+        """Determines the interest a human has in a specific car"""
+
+        # No one wants to drive an older car!
+        interest = max(
+            2
+            + 0.05 * max(5-vehicle.age, 0)
+            - 0.05 * max(vehicle.age-5, 0)
+            - 0.05 * max(vehicle.age-15, 0)
+            - 0.05 * max(vehicle.age-20, 0),
+            0.25
+        )
+
+        # Hidden preference for each vehicle type!
+        if vehicle.vehicle_type == self.prefered_vehicle:
+            interest *= 1.5
+
+        if self.gender == 'm':
+            interest *= (1 + vehicle.male_interest)
+        if self.gender == 'f':
+            interest *= (1 + vehicle.female_interest)
+        if self.age <= 25:
+            interest *= (1 + vehicle.child_interest)
+        if self.household.child_count_lt_18 > 0:
+            interest *= (1 + vehicle.parent_interest)
+
+        # Don't want kids driving the fancy car!
+        if type(self).__name__ == 'child' and self.household.vehicles is not None:
+            veh_values = [x.value for x in self.household.vehicles]
+            veh_values.sort(reverse = True)
+
+            if vehicle.value >= veh_values[0]:
+                interest *= 0.25
+            elif len(self.household.vehicles) > 1 and vehicle.value >= veh_values[1]:
+                interest *= 0.35
+            elif vehicle.value > 15_000 and self.age <= 21:
+                interest *= 0.5
+
+        return interest
 
     @property
     def wage(self):

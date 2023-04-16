@@ -24,6 +24,6 @@ class child(human):
         if score > random.uniform(0, 1):
             self.household.remove_child(self)
 
-    def get_married(self):
+    def get_married(self, years_remaining = 0):
         """Assuming any child that gets married would leave their parents house..."""
         self.household.remove_child(self)

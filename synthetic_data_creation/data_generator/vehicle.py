@@ -51,29 +51,29 @@ class vehicle:
         self.seats = 3
         self.msrp = 60_000
         self.male_interest = 0.75
-        self.female_interest = 0.1
-        self.child_interst = 0.2
-        self.parent_interest = 0.1
+        self.female_interest = -0.4
+        self.child_interest = 0.3
+        self.parent_interest = -0.3
         self.protection = 2
         self.hurt_others = 3
 
     def build_suv(self):
         self.seats = 6
         self.msrp = 60_000
-        self.male_interest = 0.6
-        self.female_interest = 0.3
-        self.child_interst = 0.3
-        self.parent_interest = 0.6
+        self.male_interest = 0.7
+        self.female_interest = -0.5
+        self.child_interest = -0.5
+        self.parent_interest = 0.4
         self.protection = 3
         self.hurt_others = 3
 
     def build_sedan(self):
         self.seats = 4
         self.msrp = 20_000
-        self.male_interest = 0.2
-        self.female_interest = 0.4
-        self.child_interst = 0.2
-        self.parent_interest = 0.3
+        self.male_interest = -0.3
+        self.female_interest = 0.6
+        self.child_interest = -0.4
+        self.parent_interest = 0.4
         self.protection = 1
         self.hurt_others = 1
 
@@ -81,18 +81,18 @@ class vehicle:
         self.seats = 2
         self.msrp = 25_000
         self.male_interest = 0.6
-        self.female_interest = 0.1
-        self.child_interst = 0.6
-        self.parent_interest = 0.1
+        self.female_interest = -0.4
+        self.child_interest = 0.6
+        self.parent_interest = -0.3
         self.protection = 1
         self.hurt_others = 2
 
     def build_van(self):
         self.seats = 6
         self.msrp = 30_000
-        self.male_interest = 0.1
+        self.male_interest = -0.4
         self.female_interest = 0.7
-        self.child_interst = 0.1
+        self.child_interest = -0.5
         self.parent_interest = 0.9
         self.protection = 2
         self.hurt_others = 2

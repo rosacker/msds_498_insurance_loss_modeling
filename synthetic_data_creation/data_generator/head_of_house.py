@@ -25,9 +25,9 @@ class head_of_house(human):
 
         super().__init__(household, target_age)
 
-    def get_married(self):
+    def get_married(self, years_remaining):
         super().get_married()
-        self.household.significant_other = spouse(self.household, self)
+        self.household.significant_other = spouse(self.household, self, years_remaining)
 
     def child_check(self, years_remaining):
         finances_check = self.household.monthly_income > self.household.household_expenses * 1.2

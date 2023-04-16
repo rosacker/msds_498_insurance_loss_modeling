@@ -14,17 +14,24 @@ class spouse(human):
     For all other purposes they are a normal human that drives cars and generates claims.
     """
 
-    def __init__(self, household, so):
+    def __init__(self, household, so, years_remaining):
         # Pick an age that is slightly lower than the head of house
-        age_lowerbound = max(int(so.age/2 + 7), 18)
+        age_lowerbound = max(int(so.age/2 + 7), 18, so.age - 8)
+
+        print(so.age)
+        print(age_lowerbound)
         age_upperbound = so.age
         age_mode = so.age-2
 
         if age_lowerbound < age_mode < age_upperbound:
-            target_age = int(random.triangular(
-                age_lowerbound, so.age, mode=so.age - 2))
+            target_age = random.triangular(
+                age_lowerbound, age_upperbound, mode=age_mode)
+            
+            target_age = int(target_age)
         else:
             target_age = so.age
+
+        print(target_age)
 
         # Decide if the couple is same or different sex
         straight_couple = random.choices([True, False], weights=[0.9, 0.1])[0]
@@ -38,7 +45,7 @@ class spouse(human):
             random.normalvariate(0, 0.5)
 
         super().__init__(household=household,
-                         target_age=target_age,
+                         target_age=target_age+years_remaining,
                          target_gender=target_gender,
                          upbringing_score=target_upbringing_score)
 

@@ -26,9 +26,13 @@ household -->|Has History Of| claim
 
 - [x] Rebalance the driver hazard attribute to be normally distributed  
 - [x] Rebalance relationship between risk scores
+- [x] Add process to determine vehicle preference for each driver
 - [ ] Add process for a household buying cars  
 - [ ] Add process for a household selling cars  
 - [ ] Add process for determining how many miles each person drives  
+- [x] Confirm spouse age process is working right
+- [ ] Add process for agging vehicles
+- [ ] Add more vehicle options
 - [ ] Add process for determining which vehicle is driven  
 - [ ] Add process for household picking insurance coverages  
 - [ ] Add "insurance coverage at the time" to claims data  
