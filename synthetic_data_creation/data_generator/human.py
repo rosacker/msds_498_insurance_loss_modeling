@@ -36,7 +36,7 @@ class human:
         self.risk_mitigation_score = self.upbringing_score + \
             random.normalvariate(0, 0.5)
         self.job_risk_deviation = random.normalvariate(0, 0.5)
-        self.financial_risk_deviation = random.normalvariate(0, 0.5)
+        self.financial_risk_deviation = random.normalvariate(0, 1)
 
         self.move_forward_n_years(target_age)
 
@@ -186,19 +186,22 @@ class human:
 
     @property
     def credit_score(self):
-        return int(200 + 700 * sig(0.2 * self.financial_risk_score))
+        return int(300 + 600 * sig(0.2 * self.financial_risk_score))
 
     @property
     def driving_experience_pct(self):
-        return sig(2.5*self.driving_experience-5)
+        return sig(1.5*self.driving_experience-5)
 
     @property
     def risk_mitigation_pct(self):
-        return sig(self.risk_mitigation_score/10-0.5)
+        return sig(self.risk_mitigation_score/2.5-0.75)
 
     @property
     def driving_hazard(self):
-        return 0.5 + 1.5 * sig(3 - 3 * self.driving_experience_pct - 0.5 * self.risk_mitigation_pct + 0.25 * max(self.age-65, 0) - 0.15 * max(self.age-75, 0))
+        return 0.7 + 1.3 * sig(
+            1 - 1.5 * self.driving_experience_pct - 1.5 * self.risk_mitigation_pct 
+            + 0.05 * max(self.age-55, 0) + 0.05 * max(self.age-65, 0) - 0.075 * max(self.age-75, 0)
+        )
 
     @property
     def years_licensed(self):
