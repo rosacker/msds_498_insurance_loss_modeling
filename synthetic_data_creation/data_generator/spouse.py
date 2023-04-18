@@ -62,12 +62,19 @@ class spouse(human):
         if self.household.head_of_household is not None:
             mileage *= 0.7
 
+        # Less driving as you age
+        if self.age >= 65:
+            modifier = max(0.01 * (self.age - 65),0) + max(0.01 * (self.age - 75),0)
+            mileage *= 1 - modifier
+
         # Kids have their own activities
         if self.household.non_driver_cnt > 0:
             extra_mileage = 2_000 * self.household.non_driver_cnt
             extra_mileage = extra_mileage/self.household.driver_count
             mileage += extra_mileage
         
+        mileage *= self.driviness * self.household.driviness * self.household.primary_house.driviness
+
         city_mileage = mileage * 0.55 * self.household.primary_house.city_driving_ratio
         highway_mileage = mileage * 0.45 * self.household.primary_house.highway_driving_ratio
         

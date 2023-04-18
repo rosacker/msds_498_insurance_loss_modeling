@@ -22,6 +22,7 @@ class household:
     def __init__(self):
         self.id = uuid4().hex
         self.inforce = True
+        self.driviness = random.normalvariate(1, 0.2)
         self.child_interest = random.choices([True, False], [0.85, 0.15])[0]
         self.children = []
         self.properties = []
@@ -48,11 +49,10 @@ class household:
                 self.properties = [house_3]
             elif 0.3 * self.monthly_income >= house_2.monthly_cost:
                 self.properties = [house_2]
-            elif 0.3 * self.monthly_income >= house_1.monthly_cost:
+            else:
                 self.properties = [house_1]
     
-    def update_vehicles(self):
-        
+    def update_vehicles(self):        
         # Sell some cars
         if self.driver_count < self.vehicle_count + 1:
             worst_score = 100_000
@@ -139,16 +139,44 @@ class household:
 
         veh_cnt = self.vehicle_count
 
+        veh_assigments = self.determine_veh_assignements()
+
         for driver in self.drivers:
             city_mileage, highway_mileage = driver.determine_mileage()
 
-            for veh in self.vehicles:               
+            for veh in self.vehicles:           
+                allocation = veh_assigments[(driver, veh)]
+
                 mileage.update({
-                    (driver, veh, 'city'): city_mileage*1.0/veh_cnt,
-                    (driver, veh, 'highway'): highway_mileage*1.0/veh_cnt,
+                    (driver, veh, 'city'): city_mileage*allocation,
+                    (driver, veh, 'highway'): highway_mileage*allocation,
+                    (driver, veh, 'total'): (city_mileage+highway_mileage)*allocation,
                 })
 
         return mileage
+    
+    def summarize_mileage(self, level = 'veh'):
+        if level == 'veh':
+            result = self.determine_mileage()
+            final = {veh:0 for veh in self.vehicles}
+
+            for key, value in result.items():
+                _, veh, road_type = key
+                if road_type == 'total':
+                    final[veh] += value
+
+            return final
+        
+        elif level == 'drv':
+            result = self.determine_mileage()
+            final = {drv:0 for drv in self.drivers}
+
+            for key, value in result.items():
+                driver, _, road_type = key
+                if road_type == 'total':
+                    final[driver] += value
+
+            return final
     
     def determine_veh_assignements(self):
         pick_nth = lambda list_val, select: [list_val.index(i) for i in sorted(list_val, reverse=True)][:select][0]
@@ -380,9 +408,13 @@ class household:
         results = self.summary
         claims_info = results.pop('claims_info')
         vehicle_info = results.pop('vehicle_info')
+        mileage_info = self.summarize_mileage('veh')
 
         summary = [dict(results,
                         **x,
+                        annual_mileage = max(1000, round([value for key, value in mileage_info.items() if key.id == x['vehicle_id']][0], -3) + 
+                                             random.choices([-2000, -1000, 0, 1000, 2000], [0.1, 0.2, 0.3, 0.2, 0.1])[0]
+                                             ),
                         vehicle_claims=[
                             y for y in claims_info if y['vehicle_id'] == x['vehicle_id']],
                         other_claims=[

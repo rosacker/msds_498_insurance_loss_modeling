@@ -20,6 +20,7 @@ class housing_property:
         self.id = uuid4().hex
         self.property_class = property_class
         self.is_primary = True
+        self.driviness = random.normalvariate(1, 0.1)
 
         if property_class == 1:
             self.build_apartment()
