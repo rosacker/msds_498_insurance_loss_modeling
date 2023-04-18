@@ -33,6 +33,7 @@ household -->|Has History Of| claim
 - [x] Confirm spouse age process is working right
 - [x] Add process for agging vehicles
 - [ ] Add process for populating years own at new business time
+- [ ] Looks back at household finances
 - [ ] Add more vehicle options
 - [ ] Add process for household picking insurance coverages  
 - [ ] Add "insurance coverage at the time" to claims data  
