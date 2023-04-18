@@ -27,6 +27,8 @@ household -->|Has History Of| claim
 - [x] Rebalance the driver hazard attribute to be normally distributed  
 - [x] Rebalance relationship between risk scores
 - [x] Add process to determine vehicle preference for each driver
+- [ ] Add process for assigning drivers to vehicles
+- [ ] Add process for prorating mileage to vehicles based on assignments
 - [ ] Add process for a household buying cars  
 - [ ] Add process for a household selling/losing cars  
 - [x] Add process for determining how many miles each person drives  

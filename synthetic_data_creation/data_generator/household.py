@@ -149,6 +149,101 @@ class household:
                 })
 
         return mileage
+    
+    def determine_veh_assignements(self):
+        pick_nth = lambda list_val, select: [list_val.index(i) for i in sorted(list_val, reverse=True)][:select][0]
+
+        vehicles = self.vehicles
+        veh_cnt = len(vehicles) 
+
+        if len(vehicles) == 1:
+            # Everyone drives that car
+            return {
+                (driver, veh): 1
+                for driver in self.drivers
+                for veh in vehicles
+            }
+
+        if self.significant_other is None:
+            # Driver gets to drive everything, find their favorite
+            head_of_house_preferences = [self.head_of_household.vehicle_interest(veh) for veh in vehicles]             
+            
+            first_pick = pick_nth(head_of_house_preferences, 1)  
+            if veh_cnt == 2:
+                return {
+                    (driver, veh): 0.85 if i == first_pick else 0.15
+                    for driver in self.drivers
+                    for i, veh in enumerate(vehicles)
+                }
+            else:
+                second_pick = pick_nth(head_of_house_preferences, 2)
+                rest = 0.05/(veh_cnt - 2)
+
+                return {
+                    (driver, veh): 0.85 if i == first_pick else (0.1 if i == second_pick else rest)
+                    for driver in self.drivers
+                    for i, veh in enumerate(vehicles)
+                }
+
+        else:
+            # Got to pick which driver gets each car. Start by calculating the parents to their top 2 fav cars
+
+            hoh_preferences = [self.head_of_household.vehicle_interest(veh) for veh in vehicles]
+            so_preferences = [self.significant_other.vehicle_interest(veh) for veh in vehicles]
+
+            hoh_first_pick = pick_nth(hoh_preferences, 1) 
+            so_first_pick = pick_nth(so_preferences, 1)
+            hoh_second_pick = pick_nth(hoh_preferences, 2) 
+            so_second_pick = pick_nth(so_preferences, 2)
+
+            if hoh_first_pick != so_first_pick:
+                best_hoh_pick = hoh_first_pick
+                best_so_pick = so_first_pick
+            else:
+                # Figure out who has to use their second fav car based on aggregate happiness
+                score_1 = hoh_preferences[hoh_first_pick] + so_preferences[so_second_pick]
+                score_2 = hoh_preferences[hoh_second_pick] + so_preferences[so_first_pick]
+
+                if score_1 >= score_2:
+                    best_hoh_pick = hoh_first_pick
+                    best_so_pick = so_second_pick
+                else:                    
+                    best_hoh_pick = hoh_first_pick
+                    best_so_pick = so_second_pick
+
+        rest = 0.15/(veh_cnt - 1)        
+        result = {
+                    (self.head_of_household, veh): 0.85 if i == best_hoh_pick else rest
+                    for i, veh in enumerate(vehicles)
+                }
+        
+        result.update({
+                    (self.significant_other, veh): 0.85 if i == best_so_pick else rest
+                    for i, veh in enumerate(vehicles)
+                })      
+
+        if self.driver_count > 2:
+            claimed_cars = [best_hoh_pick, best_so_pick]
+            
+            other_drivers = [driver for driver in self.children if driver.is_driving_age]
+           
+            preferences = [[x.vehicle_interest(veh) ** 2 if i not in claimed_cars else (0.75 * x.vehicle_interest(veh)) ** 2
+                                for i, veh in enumerate(vehicles)] 
+                                for x in other_drivers]
+            balanced_preferences = [[x/sum(y) for x in y] for y in preferences]                
+            sum_of_veh_pref = [sum(x[i] for x in preferences) for i in range(veh_cnt)]
+
+            allocated_preferences = [[x/sum_of_veh_pref[i] for i, x in enumerate(y)] for y in balanced_preferences]
+            final_preferences = [[x/sum(y) for x in y] for y in allocated_preferences]
+
+            for i, x in enumerate(other_drivers):
+                pref = final_preferences[i]
+                result.update({
+                                (x, veh): pref[j]
+                                for j, veh in enumerate(vehicles)
+                            })
+                
+        return result
 
     def remove_child(self, removal_child):
         """Remove a child when they get to an old enough age"""
