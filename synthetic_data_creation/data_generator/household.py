@@ -31,7 +31,8 @@ class household:
         self.head_of_household = head_of_house(self)
         self.head_of_household.start_life(self)
         self.tenure_years = 0
-        self.update_house()
+        self.update_house()        
+        #self.update_vehicles()
 
     def update_house(self):
         if len(self.properties) <= 1:

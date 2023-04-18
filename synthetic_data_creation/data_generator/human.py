@@ -61,7 +61,12 @@ class human:
             self.evaluate_job()
 
             # People don't shop for houses every year!
-            if 0.25 > random.uniform(0, 1):
+            if self.household.primary_house is not None and self.household.primary_house.ownership_type == 'rental':
+                rate = 0.5
+            else:
+                rate = 0.2
+
+            if rate > random.uniform(0, 1):
                 self.evaluate_housing()
 
             # People don't shop for cars every year!
@@ -133,7 +138,7 @@ class human:
             if self.job_class not in allowed_range:
                 return None
 
-            movement = random.choice([-1, 1])
+            movement = random.choices([-1, 1], [0.4, 0.6])[0]
             current_index = allowed_range.index(self.job_class)
             new_index = max(
                 min(current_index + movement, len(allowed_range)-1), 0)
