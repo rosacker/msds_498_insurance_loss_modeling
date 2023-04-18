@@ -47,6 +47,9 @@ class vehicle:
 
         self.determine_coverages(first_time = True)
 
+    def __hash__(self):
+        return hash(self.id)
+
     def build_pickup(self):
         self.seats = 3
         self.msrp = 60_000
@@ -119,7 +122,7 @@ class vehicle:
     def loan_cost(self):
         # assume 5 year loan, monthly payments, with some interest
         if self.years_owned <= 5:
-            return 1.2 * self.purchase_price / (5 * 12)
+            return 1.1 * self.purchase_price / (5 * 12)
         else:
             return 0
 

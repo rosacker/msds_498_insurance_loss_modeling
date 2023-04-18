@@ -39,6 +39,9 @@ class housing_property:
             self.city_driving_ratio = 0.5
             self.highway_driving_ratio = 1.8
 
+    def __hash__(self):
+        return hash(self.id)
+
     def build_apartment(self):
         self.ownership_type = 'rental'
         self.garages = 0

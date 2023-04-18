@@ -27,61 +27,16 @@ class household:
         self.children = []
         self.properties = []
         self.claims = []
-        self.vehicles = [vehicle(self, 15, 'sedan'), vehicle(self, 3, 'suv')]
+        self.vehicles = []
         self.significant_other = None
         self.head_of_household = head_of_house(self)
         self.head_of_household.start_life(self)
         self.tenure_years = 0
-        self.update_house()        
-        #self.update_vehicles()
+        self.update_house()
+        self.update_vehicles()
 
-    def update_house(self):
-        if len(self.properties) <= 1:
-            house_1 = housing_property(1, self)
-            house_2 = housing_property(2, self)
-            house_3 = housing_property(3, self)
-
-            if 0.20 * self.monthly_income >= house_3.monthly_cost + house_2.monthly_cost:
-                # Congrats on the vacation home you crazy people...                
-                house_2.is_primary = False
-                self.properties = [house_3, house_2]
-            elif 0.3 * self.monthly_income >= house_3.monthly_cost:
-                self.properties = [house_3]
-            elif 0.3 * self.monthly_income >= house_2.monthly_cost:
-                self.properties = [house_2]
-            else:
-                self.properties = [house_1]
-    
-    def update_vehicles(self):        
-        # Sell some cars
-        if self.driver_count < self.vehicle_count + 1:
-            worst_score = 100_000
-            for vehicle in self.vehicles:
-                for driver in self.drivers:
-                    score = driver.vehicle_interest(vehicle)
-
-                    if score <= worst_score:
-                        worst_score = score
-                        worst_vehicle = vehicle
-
-            #worst_vehicle.sell()
-                
-        # Buy more cars
-        if self.driver_count >= self.vehicle_count:
-            worst_score = 100_000
-            for driver in self.drivers:
-                best_score = 0
-                for vehicle in self.vehicles:
-                    score = driver.vehicle_interest(vehicle)
-
-                    if score > best_score:
-                        best_score = score
-                    
-                if best_score < worst_score:
-                    worst_score = best_score
-                    worst_driver = driver
-
-            #worst_driver.buy_car()
+    def __hash__(self):
+        return hash(self.id)
 
     def move_forward_n_years(self, n):
         if not self.inforce:
@@ -106,10 +61,12 @@ class household:
 
             self.household_lapse_check()
 
-            self.generate_claims()
-
             if not self.inforce:
                 return None
+            else:
+                self.update_vehicles()
+                self.generate_claims()
+
 
     def generate_claims(self):
         mileage = self.determine_mileage()
@@ -136,8 +93,6 @@ class household:
 
     def determine_mileage(self):
         mileage = {}
-
-        veh_cnt = self.vehicle_count
 
         veh_assigments = self.determine_veh_assignements()
 
@@ -178,10 +133,10 @@ class household:
 
             return final
     
-    def determine_veh_assignements(self):
+    def determine_veh_assignements(self, vehicles = None):
         pick_nth = lambda list_val, select: [list_val.index(i) for i in sorted(list_val, reverse=True)][:select][0]
 
-        vehicles = self.vehicles
+        vehicles = vehicles if vehicles is not None else self.vehicles
         veh_cnt = len(vehicles) 
 
         if len(vehicles) == 1:
@@ -278,6 +233,118 @@ class household:
 
         self.children = [x for x in self.children if x != removal_child]
 
+    def generate_veh_list_from_scratch(self, n):
+        vehicles = []
+
+        for i in range(n):    
+            age = int(random.uniform(0, 25))
+            vehicle_type = random.choice(['pickup', 'suv', 'sedan', 'sports car', 'van'])
+            vehicles.append(vehicle(self, age, vehicle_type))
+        
+        return frozenset(vehicles)
+    
+    def generate_veh_list(self, add_car, remove_car):
+        vehicles = self.vehicles.copy()
+
+        # Randomly remove 1 car
+        if remove_car:
+            ids = len(vehicles)
+            id = random.choice(range(ids))
+            vehicles = [x for i, x in enumerate(vehicles) if i != id]
+
+        # Randomly add 1 car
+        if add_car:
+            age = int(random.uniform(0, 25))
+            vehicle_type = random.choice(['pickup', 'suv', 'sedan', 'sports car', 'van'])
+
+            vehicles.append(vehicle(self, age, vehicle_type))
+        
+        return frozenset(vehicles)
+
+    def evaluate_new_vehicles(self, vehicles):
+        drivers = self.drivers
+        prefs = {(driver, veh): driver.vehicle_interest(veh) for veh in vehicles for driver in drivers}
+        allocation = self.determine_veh_assignements(vehicles)
+        cost = 12 * sum([x.monthly_cost for x in vehicles])
+
+        match_score = 0
+
+        if len(vehicles) == 0:
+            return -1000
+
+        excess_cost = (cost - self.annual_income * 0.2 * 0.7)
+        if excess_cost >= 5000:
+            return -500
+        elif excess_cost > 0:
+            match_score += -excess_cost / 1_000
+
+        for key, value in prefs.items():
+            driver, veh = key
+            match_score += value * allocation[key]
+
+        if len(drivers) > len(vehicles):
+            match_score += -1.0 * (len(drivers) - len(vehicles))
+
+        if len(drivers) + 2 <= len(vehicles):    
+            match_score += -1.0 * (len(vehicles) - len(drivers))
+
+        # No one likes a giant army of matching cars
+        unique_types = len(set([x.vehicle_type for x in vehicles]))
+        if unique_types < len(vehicles):
+            match_score += 0.5 * (unique_types - len(vehicles))
+
+        return match_score
+    
+    def update_vehicles(self):        
+        if len(self.vehicles) == 0:
+            if self.driver_count <= 2:
+                options = [
+                    *[self.generate_veh_list_from_scratch(1) for i in range(10)],
+                    *[self.generate_veh_list_from_scratch(2) for i in range(10)]
+                ]
+            else:
+                options = [
+                    *[self.generate_veh_list_from_scratch(2) for i in range(10)],
+                    *[self.generate_veh_list_from_scratch(3) for i in range(10)],
+                    *[self.generate_veh_list_from_scratch(4) for i in range(10)],
+                    *[self.generate_veh_list_from_scratch(5) for i in range(5)],
+                ]
+
+
+        else:
+            options = [
+                frozenset(self.vehicles), 
+                *[self.generate_veh_list(add_car = True, remove_car = True) for i in range(10)],
+                *[self.generate_veh_list(add_car = True, remove_car = False) for i in range(10)],
+                *[self.generate_veh_list(add_car = False, remove_car = False) for i in range(3)],
+                ]
+
+        options = [list(x) for x in set(options)]
+        scores = [self.evaluate_new_vehicles(x) for x in options]
+        best_score = [scores.index(i) for i in sorted(scores, reverse=True)][:1][0]
+        self.vehicles = options[best_score]
+
+    def update_house(self):
+        if len(self.properties) <= 1:
+            house_1 = housing_property(1, self)
+            house_2 = housing_property(2, self)
+            house_3 = housing_property(3, self)
+
+            # A healthy financial siution is housing costs no more than 30% of take home pay
+            # Gotta take 20% off the top for taxes first!
+            # Gotta take another 10% for savings
+
+            if 0.20 * self.monthly_income * 0.7 >= house_3.monthly_cost + house_2.monthly_cost:
+                # Congrats on the vacation home you crazy people that make way too much money               
+                house_2.is_primary = False
+                self.properties = [house_3, house_2]
+            elif 0.3 * self.monthly_income * 0.7 >= house_3.monthly_cost:
+                self.properties = [house_3]
+            elif 0.3 * self.monthly_income * 0.7 >= house_2.monthly_cost:
+                self.properties = [house_2]
+            else:
+                self.properties = [house_1]
+    
     def household_lapse_check(self):
         hh_age = self.head_of_household.age
 

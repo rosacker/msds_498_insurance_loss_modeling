@@ -50,6 +50,9 @@ class human:
         self.financial_risk_deviation = random.normalvariate(0, 1)
 
         self.move_forward_n_years(target_age)
+        
+    def __hash__(self):
+        return hash(self.id)
 
     def move_forward_n_years(self, n):
         for i in range(n):
@@ -161,9 +164,8 @@ class human:
         self.married = True
         self.risk_mitigation_score += 0.15
 
-    def vehicle_interest(self, vehicle):
+    def vehicle_interest(self, vehicle, vehicles = None):
         """Determines the interest a human has in a specific car"""
-
         # No one wants to drive an older car!
         interest = max(
             2
@@ -188,7 +190,7 @@ class human:
             interest *= (1 + vehicle.parent_interest)
 
         # Don't want kids driving the fancy car!
-        if type(self).__name__ == 'child' and self.household.vehicles is not None:
+        if type(self).__name__ == 'child' and self.household.vehicles != []:
             veh_values = [x.value for x in self.household.vehicles]
             veh_values.sort(reverse = True)
 

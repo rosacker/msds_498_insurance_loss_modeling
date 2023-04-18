@@ -29,8 +29,8 @@ household -->|Has History Of| claim
 - [x] Add process to determine vehicle preference for each driver
 - [x] Add process for assigning drivers to vehicles
 - [x] Add process for prorating mileage to vehicles based on assignments
-- [ ] Add process for a household buying cars  
-- [ ] Add process for a household selling/losing cars  
+- [x] Add process for a household buying cars  
+- [x] Add process for a household selling/losing cars  
 - [ ] Looks back at household finances
 - [x] Add process for determining how many miles each person drives  
 - [x] Confirm spouse age process is working right
