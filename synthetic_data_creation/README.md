@@ -32,7 +32,6 @@ household -->|Has History Of| claim
 - [ ] Add process for a household buying cars  
 - [ ] Add process for a household selling/losing cars  
 - [ ] Looks back at household finances
-- [ ] Figure out the claim process for each peril
 - [x] Add process for determining how many miles each person drives  
 - [x] Confirm spouse age process is working right
 - [x] Add process for agging vehicles
