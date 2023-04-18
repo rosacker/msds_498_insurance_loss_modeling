@@ -114,7 +114,7 @@ class household:
         mileage = self.determine_mileage()
 
         for key, mileage in mileage.items():
-            driver, vehicle, road_type = key
+            driver, veh, road_type = key
 
             hazards = {
                 'single_car_collision': 0.03 * (mileage/10000),
@@ -130,7 +130,7 @@ class household:
                 n = int(poisson(hazard, 1)[0])
                 if n > 0:
                     for _ in range(n):
-                        self.claims.append(claim(claim_type, self, vehicle=vehicle, driver=driver))
+                        self.claims.append(claim(claim_type, self, vehicle=veh, driver=driver))
             
 
     def determine_mileage(self):
