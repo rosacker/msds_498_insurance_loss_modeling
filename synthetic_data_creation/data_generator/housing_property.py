@@ -29,14 +29,14 @@ class housing_property:
             self.build_complete_house()
 
         if self.location == 'downtown':
-            self.city_driving_ratio = 1.2
-            self.highway_driving_ratio = 0.5
+            self.city_driving_ratio = 1.4
+            self.highway_driving_ratio = 0.35
         elif self.location == 'suburb':
-            self.city_driving_ratio = 0.7
-            self.highway_driving_ratio = 1.1
+            self.city_driving_ratio = 0.8
+            self.highway_driving_ratio = 1.25
         elif self.location == 'country':
             self.city_driving_ratio = 0.5
-            self.highway_driving_ratio = 1.5
+            self.highway_driving_ratio = 1.8
 
     def build_apartment(self):
         self.ownership_type = 'rental'

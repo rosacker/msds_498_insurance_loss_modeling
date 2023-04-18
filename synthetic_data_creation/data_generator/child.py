@@ -35,6 +35,15 @@ class child(human):
             mileage = 8_000
         else:
             mileage = 10_000
+                
+        # Men drive a bit more!
+        # According to the Federal Highway Administration, female drivers travel about 6,408 miles less than men annually.
+        if self.gender == 'm':
+            mileage *= 1.2
+
+        # If they've got a job we've got extra driving to do!
+        if self.job_class != 0:
+            mileage *= 1.2
 
         # Share rides with other kids
         if self.household.driver_count > 3:

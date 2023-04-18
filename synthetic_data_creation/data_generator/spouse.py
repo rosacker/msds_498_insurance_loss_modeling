@@ -48,6 +48,15 @@ class spouse(human):
 
     def determine_mileage(self):
         mileage = 10_000
+        
+        # Men drive a bit more!
+        # According to the Federal Highway Administration, female drivers travel about 6,408 miles less than men annually.
+        if self.gender == 'm':
+            mileage *= 1.2
+
+        # Unemployed people don't drive as much!
+        if self.job_class == 0:
+            mileage *= 0.5
 
         # Share rides with our spouse!
         if self.household.head_of_household is not None:
