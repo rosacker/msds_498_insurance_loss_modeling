@@ -31,11 +31,12 @@ household -->|Has History Of| claim
 - [x] Add process for prorating mileage to vehicles based on assignments
 - [ ] Add process for a household buying cars  
 - [ ] Add process for a household selling/losing cars  
+- [ ] Looks back at household finances
+- [ ] Figure out the claim process for each peril
 - [x] Add process for determining how many miles each person drives  
 - [x] Confirm spouse age process is working right
 - [x] Add process for agging vehicles
 - [ ] Add process for populating years own at new business time
-- [ ] Looks back at household finances
 - [ ] Add more vehicle options
 - [ ] Add process for household picking insurance coverages  
 - [ ] Add "insurance coverage at the time" to claims data  
