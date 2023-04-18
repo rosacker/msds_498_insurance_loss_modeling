@@ -29,7 +29,7 @@ household -->|Has History Of| claim
 - [x] Add process to determine vehicle preference for each driver
 - [ ] Add process for a household buying cars  
 - [ ] Add process for a household selling/losing cars  
-- [ ] Add process for determining how many miles each person drives  
+- [x] Add process for determining how many miles each person drives  
 - [x] Confirm spouse age process is working right
 - [x] Add process for agging vehicles
 - [ ] Add process for populating years own at new business time
@@ -37,6 +37,7 @@ household -->|Has History Of| claim
 - [ ] Add process for household picking insurance coverages  
 - [ ] Add "insurance coverage at the time" to claims data  
 - [ ] Write coverage specific logic for determining when claims occur  
+- [ ] Figure out how subsequent loss fields should be marked
 - [ ] Build way to export data to Weights & Bias  
 - [ ] Build way to export data at multiple levels (household, vehicle, all claims, etc) 
 - [ ] Write metadata on all fields  
