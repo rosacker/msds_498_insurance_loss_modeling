@@ -61,8 +61,12 @@ class human:
             self.evaluate_job()
 
             # People don't shop for houses every year!
-            if 0.33 > random.uniform(0, 1):
+            if 0.25 > random.uniform(0, 1):
                 self.evaluate_housing()
+
+            # People don't shop for cars every year!
+            if 0 > random.uniform(0, 1):
+                self.evaluate_vehicles()
 
             if self.is_driving_age:
                 self.driving_experience += random.uniform(0, 1)
@@ -136,6 +140,9 @@ class human:
             self.job_class = allowed_range[new_index]
 
     def evaluate_housing(self):
+        return None  
+    
+    def evaluate_vehicles(self):
         return None
 
     def child_check(self, years_remaining):

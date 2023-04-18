@@ -76,3 +76,24 @@ class head_of_house(human):
 
     def evaluate_housing(self):
         self.household.update_house()
+
+    def evaluate_vehicles(self):
+        self.household.update_vehicles()
+
+    def determine_mileage(self):
+        mileage = 10_000
+
+        # Share rides with our spouse!
+        if self.household.significant_other is not None:
+            mileage *= 0.7
+
+        # Kids have their own activities
+        if self.household.non_driver_cnt > 0:
+            extra_mileage = 2_000 * self.household.non_driver_cnt
+            extra_mileage = extra_mileage/self.household.driver_count
+            mileage += extra_mileage
+        
+        city_mileage = mileage * 0.55 * self.household.primary_house.city_driving_ratio
+        highway_mileage = mileage * 0.45 * self.household.primary_house.highway_driving_ratio
+        
+        return (city_mileage, highway_mileage)

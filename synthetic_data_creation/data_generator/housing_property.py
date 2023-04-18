@@ -19,6 +19,7 @@ class housing_property:
         self.household = household
         self.id = uuid4().hex
         self.property_class = property_class
+        self.is_primary = True
 
         if property_class == 1:
             self.build_apartment()
@@ -27,20 +28,34 @@ class housing_property:
         elif property_class == 3:
             self.build_complete_house()
 
+        if self.location == 'downtown':
+            self.city_driving_ratio = 1.2
+            self.highway_driving_ratio = 0.5
+        elif self.location == 'suburb':
+            self.city_driving_ratio = 0.7
+            self.highway_driving_ratio = 1.1
+        elif self.location == 'country':
+            self.city_driving_ratio = 0.5
+            self.highway_driving_ratio = 1.5
+
     def build_apartment(self):
         self.ownership_type = 'rental'
         self.garages = 0
         self.beds = 3
         self.monthly_cost = 1000
+        self.location = random.choices(['downtown', 'suburb', 'country'], [0.8, 0.15, 0.05])[0]
 
     def build_modest_house(self):
         self.ownership_type = 'owned'
         self.garages = 3
         self.beds = 4
         self.monthly_cost = 2000
+        self.location = random.choices(['downtown', 'suburb', 'country'], [0.4, 0.4, 0.2])[0]
 
     def build_complete_house(self):
         self.ownership_type = 'owned'
         self.garages = 5
         self.beds = 7
         self.monthly_cost = 4000
+        self.location = random.choices(['downtown', 'suburb', 'country'], [0.2, 0.7, 0.3])[0]
+

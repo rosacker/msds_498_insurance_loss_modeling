@@ -31,6 +31,7 @@ class household:
         self.head_of_household = head_of_house(self)
         self.head_of_household.start_life(self)
         self.tenure_years = 0
+        self.update_house()
 
     def update_house(self):
         if len(self.properties) <= 1:
@@ -39,7 +40,8 @@ class household:
             house_3 = housing_property(3, self)
 
             if 0.20 * self.monthly_income >= house_3.monthly_cost + house_2.monthly_cost:
-                # Congrats on the vacation home you crazy people...
+                # Congrats on the vacation home you crazy people...                
+                house_2.is_primary = False
                 self.properties = [house_3, house_2]
             elif 0.3 * self.monthly_income >= house_3.monthly_cost:
                 self.properties = [house_3]
@@ -47,6 +49,38 @@ class household:
                 self.properties = [house_2]
             elif 0.3 * self.monthly_income >= house_1.monthly_cost:
                 self.properties = [house_1]
+    
+    def update_vehicles(self):
+        
+        # Sell some cars
+        if self.driver_count < self.vehicle_count + 1:
+            worst_score = 100_000
+            for vehicle in self.vehicles:
+                for driver in self.drivers:
+                    score = driver.vehicle_interest(vehicle)
+
+                    if score <= worst_score:
+                        worst_score = score
+                        worst_vehicle = vehicle
+
+            #worst_vehicle.sell()
+                
+        # Buy more cars
+        if self.driver_count >= self.vehicle_count:
+            worst_score = 100_000
+            for driver in self.drivers:
+                best_score = 0
+                for vehicle in self.vehicles:
+                    score = driver.vehicle_interest(vehicle)
+
+                    if score > best_score:
+                        best_score = score
+                    
+                if best_score < worst_score:
+                    worst_score = best_score
+                    worst_driver = driver
+
+            #worst_driver.buy_car()
 
     def move_forward_n_years(self, n):
         if not self.inforce:
@@ -100,12 +134,18 @@ class household:
             
 
     def determine_mileage(self):
-        mileage = {
-            (driver, vehicle, road_type): 5_000
-            for driver in self.drivers
-            for vehicle in self.vehicles
-            for road_type in ['highway', 'city']
-        }
+        mileage = {}
+
+        veh_cnt = self.vehicle_count
+
+        for driver in self.drivers:
+            city_mileage, highway_mileage = driver.determine_mileage()
+
+            for veh in self.vehicles:               
+                mileage.update({
+                    (driver, veh, 'city'): city_mileage*1.0/veh_cnt,
+                    (driver, veh, 'highway'): highway_mileage*1.0/veh_cnt,
+                })
 
         return mileage
 
@@ -148,6 +188,7 @@ class household:
             'min_driver_tenure': self.min_driver_tenure,
             'max_driver_tenure': self.max_driver_tenure,
             'driver_count': self.driver_count,
+            'vehicle_count': self.vehicle_count,
             'youthful_driver_count': self.youthful_driver_count,
             'max_driver_age': self.max_driver_age,
             'min_driver_age': self.min_driver_age,
@@ -159,7 +200,8 @@ class household:
             'multiline_personal_article_policy': self.multiline_personal_article_policy,
             'vehicle_info': [x.summary for x in self.vehicles],
             'driver_info': [x.summary for x in self.drivers],
-            'claims_info': [x.summary for x in self.claims if (x.driver_in_force or x.driver is None)]
+            'claims_info': [x.summary for x in self.claims if (x.driver_in_force or x.driver is None)],
+            'garaging_location': self.garaging_location
         }
 
         drivers_list = self.drivers
@@ -311,6 +353,10 @@ class household:
     @property
     def child_count_lt_18(self):
         return len([x for x in self.children if x.age < 18])
+    
+    @property
+    def non_driver_cnt(self):
+        return len([x for x in self.household_members if x.is_driving_age])
 
     @property
     def annual_income(self):
@@ -378,11 +424,21 @@ class household:
 
     @property
     def garage_count(self):
-        return sum([x.garages for x in self.properties])
+        if len(self.properties) == 0:
+            return 0
+        
+        return self.primary_house.garages
 
     @property
     def bed_count(self):
-        return sum([x.beds for x in self.properties])
+        if len(self.properties) == 0:
+            return 0
+        
+        return self.primary_house.beds
+    
+    @property
+    def vehicle_count(self):
+        return len(self.vehicles)
 
     @property
     def min_driver_age(self):
@@ -464,3 +520,14 @@ class household:
             return None
 
         return mean([x.risk_mitigation_score for x in self.drivers])
+    
+    @property
+    def primary_house(self):
+        if len(self.properties) == 0:
+            return None
+        
+        return [x for x in self.properties if x.is_primary][0]
+    
+    @property
+    def garaging_location(self):
+        return self.primary_house.location

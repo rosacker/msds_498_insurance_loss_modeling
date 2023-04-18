@@ -27,3 +27,26 @@ class child(human):
     def get_married(self, years_remaining = 0):
         """Assuming any child that gets married would leave their parents house..."""
         self.household.remove_child(self)
+
+    def determine_mileage(self):
+        if self.age <= 18:
+            mileage = 6_000
+        elif self.age <= 20:
+            mileage = 8_000
+        else:
+            mileage = 10_000
+
+        # Share rides with other kids
+        if self.household.driver_count > 3:
+            mileage *= (0.7 ** (self.household.driver_count - 3))
+
+        # Kids have their own activities
+        if self.household.non_driver_cnt > 0:
+            extra_mileage = 2_000 * self.household.non_driver_cnt
+            extra_mileage = extra_mileage/self.household.driver_count
+            mileage += extra_mileage
+        
+        city_mileage = mileage * 0.55 * self.household.primary_house.city_driving_ratio
+        highway_mileage = mileage * 0.45 * self.household.primary_house.highway_driving_ratio
+        
+        return (city_mileage, highway_mileage)
