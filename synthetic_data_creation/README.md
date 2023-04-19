@@ -39,6 +39,7 @@ household -->|Has History Of| claim
 - [ ] Add process for household picking insurance coverages  
 - [ ] Add "insurance coverage at the time" to claims data  
 - [ ] Write coverage specific logic for determining when claims occur  
+- [ ] Handle coverages that aren't mileage based, so need to only occur once per household instead of once per driver
 - [ ] Figure out how subsequent loss fields should be marked
 - [ ] Build way to export data to Weights & Bias  
 - [ ] Build way to export data at multiple levels (household, vehicle, all claims, etc) 

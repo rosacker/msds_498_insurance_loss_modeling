@@ -158,58 +158,64 @@ class vehicle:
 
         # Count of claims
         claim_counts = {
-            f'vehicle_claim_cnt_all_{age}': len([x for x in claims if x.how_old == age and x.paid_indicator])
-            for age in range(1, 16)
+            f'vehicle_claim_cnt_all_{age-1}': len([x for x in claims if x.how_old == age and x.paid_indicator and (x.driver_in_force  or x.driver is None)])
+            for age in range(1, 17)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'vehicle_claim_cnt_bi_{age}': len([x for x in claims if x.how_old == age and x.bi == 1 and x.paid_indicator])
-            for age in range(1, 16)
+            f'vehicle_claim_cnt_bi_{age-1}': len([x for x in claims if x.how_old == age and x.bi == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)])
+            for age in range(1, 17)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'vehicle_claim_cnt_pd_{age}': len([x for x in claims if x.how_old == age and x.pd == 1 and x.paid_indicator])
-            for age in range(1, 16)
+            f'vehicle_claim_cnt_pd_{age-1}': len([x for x in claims if x.how_old == age and x.pd == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)])
+            for age in range(1, 17)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'vehicle_claim_cnt_coll_{age}': len([x for x in claims if x.how_old == age and x.coll == 1 and x.paid_indicator])
-            for age in range(1, 16)
+            f'vehicle_claim_cnt_coll_{age-1}': len([x for x in claims if x.how_old == age and x.coll == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)])
+            for age in range(1, 17)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'vehicle_claim_cnt_comp_{age}': len([x for x in claims if x.how_old == age and x.comp == 1 and x.paid_indicator])
-            for age in range(1, 16)
+            f'vehicle_claim_cnt_comp_{age-1}': len([x for x in claims if x.how_old == age and x.comp == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)])
+            for age in range(1, 17)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'vehicle_claim_cnt_ers_{age}': len([x for x in claims if x.how_old == age and x.ers == 1 and x.paid_indicator])
-            for age in range(1, 16)
+            f'vehicle_claim_cnt_mpc_{age-1}': len([x for x in claims if x.how_old == age and x.mpc == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)])
+            for age in range(1, 17)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'vehicle_claim_cnt_ubi_{age}': len([x for x in claims if x.how_old == age and x.ubi == 1 and x.paid_indicator])
-            for age in range(1, 16)
+            f'vehicle_claim_cnt_ers_{age-1}': len([x for x in claims if x.how_old == age and x.ers == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)])
+            for age in range(1, 17)
+        }
+        results.update(**claim_counts)
+
+        claim_counts = {
+            f'vehicle_claim_cnt_ubi_{age-1}': len([x for x in claims if x.how_old == age and x.ubi == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)])
+            for age in range(1, 17)
         }
         results.update(**claim_counts)
 
         # Time Since Claim
-        def min_with_none(x): return min(x) if len(x) > 0 else None
+        def min_with_none(x): return min(x) - 1 if len(x) > 0 else None
         claim_counts = {
-            'vehicle_claim_time_since_all': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.paid_indicator]),
-            'vehicle_claim_time_since_bi': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.bi == 1 and x.paid_indicator]),
-            'vehicle_claim_time_since_pd': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.pd == 1 and x.paid_indicator]),
-            'vehicle_claim_time_since_comp': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.comp == 1 and x.paid_indicator]),
-            'vehicle_claim_time_since_coll': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.coll == 1 and x.paid_indicator]),
-            'vehicle_claim_time_since_mpc': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.mpc == 1 and x.paid_indicator]),
-            'vehicle_claim_time_since_ers': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.ers == 1 and x.paid_indicator]),
-            'vehicle_claim_time_since_ubi': min_with_none([x.how_old for x in claims if x.how_old <= 15 and x.ubi == 1 and x.paid_indicator])
+            'vehicle_claim_time_since_all': min_with_none([x.how_old for x in claims if 1 < x.how_old <= 16 and x.paid_indicator and (x.driver_in_force  or x.driver is None)]),
+            'vehicle_claim_time_since_bi': min_with_none([x.how_old for x in claims if 1 < x.how_old <= 16 and x.bi == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)]),
+            'vehicle_claim_time_since_pd': min_with_none([x.how_old for x in claims if 1 < x.how_old <= 16 and x.pd == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)]),
+            'vehicle_claim_time_since_comp': min_with_none([x.how_old for x in claims if 1 < x.how_old <= 16 and x.comp == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)]),
+            'vehicle_claim_time_since_coll': min_with_none([x.how_old for x in claims if 1 < x.how_old <= 16 and x.coll == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)]),
+            'vehicle_claim_time_since_mpc': min_with_none([x.how_old for x in claims if 1 < x.how_old <= 16 and x.mpc == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)]),
+            'vehicle_claim_time_since_ers': min_with_none([x.how_old for x in claims if 1 < x.how_old <= 16 and x.ers == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)]),
+            'vehicle_claim_time_since_ubi': min_with_none([x.how_old for x in claims if 1 < x.how_old <= 16 and x.ubi == 1 and x.paid_indicator and (x.driver_in_force  or x.driver is None)])
         }
         results.update(**claim_counts)
 

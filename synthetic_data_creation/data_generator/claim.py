@@ -118,7 +118,7 @@ class claim:
             'mpc_ind': self.mpc,
             'ers_ind': self.ers,
             'ubi_ind': self.ubi,
-            'claim_age': self.how_old
+            'claim_age': self.how_old - 1 # Subtract 1 so subsequent claims would be 0
         }
 
         return results
