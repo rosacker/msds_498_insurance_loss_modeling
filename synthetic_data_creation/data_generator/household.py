@@ -441,7 +441,7 @@ class household:
 
         # Count of claims
         claim_counts = {
-            f'household_claim_cnt_all_{age-1}': len([x for x in self.claims if (x.driver_in_force  or x.driver is None) and x.how_old == age and x.paid_indicator])
+            f'household_claim_cnt_all_{age}': len([x for x in self.claims if (x.driver_in_force  or x.driver is None) and x.how_old == age and x.paid_indicator])
             for age in range(1, 16)
         }
         results.update(**claim_counts)
