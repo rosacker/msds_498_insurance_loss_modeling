@@ -114,7 +114,7 @@ class household:
                     0.03 * sqrt(mileage/10000) *
                     (1.5 if road_type == 'highway' else 1) *
                     (driver.driving_hazard ** 0.3) *
-                    min(1, 1 + 0.005 * veh.age + 0.5 * max(veh.age - 7, 0) + 0.4 * max(veh.age - 12, 0) - 0.3 * max(veh.age - 17, 0) - 0.3 * max(veh.age - 21, 0))
+                    min(1, 1 + 0.005 * veh.age + 0.1 * max(veh.age - 7, 0) + 0.1 * max(veh.age - 12, 0) - 0.1 * max(veh.age - 17, 0) - 0.05 * max(veh.age - 21, 0))
                 ),
             }
 
@@ -312,10 +312,10 @@ class household:
             return -1000
 
         excess_cost = (cost - self.annual_income * 0.2 * 0.7)
-        if excess_cost >= 5000:
+        if excess_cost >= 0:
             return -500
-        elif excess_cost > 0:
-            match_score += -excess_cost / 1_000
+        #elif excess_cost > 0:
+        #    match_score += -excess_cost / 500
 
         for key, value in prefs.items():
             driver, veh = key
@@ -361,6 +361,10 @@ class household:
         options = [list(x) for x in set(options)]
         scores = [self.evaluate_new_vehicles(x) for x in options]
         best_score = [scores.index(i) for i in sorted(scores, reverse=True)][:1][0]
+
+        if best_score < -100:
+            self.vehicles = [vehicle(self, 'van', 25)]
+            
         self.vehicles = options[best_score]
 
     def update_house(self):

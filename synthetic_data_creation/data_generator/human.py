@@ -171,8 +171,8 @@ class human:
             2
             + 0.05 * max(5-vehicle.age, 0)
             - 0.05 * max(vehicle.age-5, 0)
-            - 0.05 * max(vehicle.age-15, 0)
-            - 0.05 * max(vehicle.age-20, 0),
+            + 0.025 * max(vehicle.age-15, 0)
+            + 0.02 * max(vehicle.age-20, 0),
             0.25
         )
 
