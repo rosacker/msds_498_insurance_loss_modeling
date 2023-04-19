@@ -143,7 +143,7 @@ class vehicle:
 
     @property
     def prior_claims(self):
-        return [x for x in self.household.claims if x.vehicle == self]
+        return [x for x in self.household.claims if x.vehicle == self and x.paid_indicator]
 
     @property
     def summary(self):

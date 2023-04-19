@@ -79,21 +79,27 @@ class household:
                 'single_car_collision': (
                     0.03 * sqrt(mileage/10000) *
                     (0.5 if road_type == 'highway' else 1) *
-                    (driver.driving_hazard ** 1.1) *
+                    (driver.driving_hazard ** 0.9) *
                     min(1, 1 + 0.01 * (veh.age - 5))
                 ),
                 'multi_car_collision': (
                     0.03 * sqrt(mileage/10000) *
                     (0.25 if road_type == 'highway' else 1) *
-                    (driver.driving_hazard ** 1.2) *
+                    (driver.driving_hazard) *
                     min(1, 1 + 0.0125 * (veh.age - 5))
                 ),
-                'theft': 0.03 *
+                'theft': (
+                    0.001 * sqrt(mileage/10000) *
+                    (0.05 if road_type == 'highway' else 1) *
                     (driver.driving_hazard ** 0.1) *
-                    (1.3 if veh.household.primary_house.location == 'downtown' else 1),
-                'hail': 0.03 *
+                    (1.5 if veh.household.primary_house.location == 'downtown' else 1)
+                ),
+                'hail': (                    
+                    0.001 * sqrt(mileage/10000) *
+                    (1.3 if road_type == 'highway' else 1) *
                     (driver.driving_hazard ** 0.1) *
-                    (0.6 if veh.household.primary_house.location == 'downtown' else 1),
+                    (0.6 if veh.household.primary_house.location == 'downtown' else 1)
+                ),
                 'glass': (
                     0.03 * sqrt(mileage/10000) *
                     (2.1 if road_type == 'highway' else 1) *
@@ -108,7 +114,7 @@ class household:
                     0.03 * sqrt(mileage/10000) *
                     (1.5 if road_type == 'highway' else 1) *
                     (driver.driving_hazard ** 0.3) *
-                    min(1, 1 + 0.005 * veh.age + 0.05 * max(veh.age - 7, 0) + 0.04 * max(veh.age - 12, 0) - 0.03 * max(veh.age - 17, 0) - 0.03 * max(veh.age - 21, 0))
+                    min(1, 1 + 0.005 * veh.age + 0.5 * max(veh.age - 7, 0) + 0.4 * max(veh.age - 12, 0) - 0.3 * max(veh.age - 17, 0) - 0.3 * max(veh.age - 21, 0))
                 ),
             }
 
@@ -116,7 +122,12 @@ class household:
                 n = int(poisson(hazard, 1)[0])
                 if n > 0:
                     for _ in range(n):
-                        self.claims.append(claim(claim_type, self, vehicle=veh, driver=driver))
+                        if claim_type in ['theft', 'hail']:
+                            assigned_driver = None
+                        else:
+                            assigned_driver = driver
+
+                        self.claims.append(claim(claim_type, self, vehicle=veh, driver=assigned_driver))
             
 
     def determine_mileage(self):
@@ -419,7 +430,7 @@ class household:
             'multiline_personal_article_policy': self.multiline_personal_article_policy,
             'vehicle_info': [x.summary for x in self.vehicles],
             'driver_info': [x.summary for x in self.drivers],
-            'claims_info': [x.summary for x in self.claims if (x.driver_in_force or x.driver is None) and x.how_old != 1],
+            'claims_info': [x.summary for x in self.claims if (x.driver_in_force or x.driver is None) and x.how_old != 0 and x.paid_indicator],
             'garaging_location': self.garaging_location
         }
 
