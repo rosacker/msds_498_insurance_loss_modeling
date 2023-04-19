@@ -137,3 +137,7 @@ class claim:
     @property
     def how_old(self):
         return self.household.tenure_years - self.when_occured
+    
+    @property
+    def paid_indicator(self):
+        return (self.bi + self.pd + self.coll + self.comp + self.mpc + self.ers + self.ubi) > 0
