@@ -314,8 +314,6 @@ class household:
         excess_cost = (cost - self.annual_income * 0.2 * 0.7)
         if excess_cost >= 0:
             return -500
-        #elif excess_cost > 0:
-        #    match_score += -excess_cost / 500
 
         for key, value in prefs.items():
             driver, veh = key
@@ -362,6 +360,7 @@ class household:
         scores = [self.evaluate_new_vehicles(x) for x in options]
         best_score = [scores.index(i) for i in sorted(scores, reverse=True)][:1][0]
 
+        # If there are no good veh options, just buy a crappy van I guess :P 
         if best_score < -100:
             self.vehicles = [vehicle(self, 'van', 25)]
             
