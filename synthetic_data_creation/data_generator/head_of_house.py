@@ -21,7 +21,7 @@ class head_of_house(human):
 
     def start_life(self, household):
         target_age = max(16, int(random.uniform(
-            20, 70) + random.normalvariate(0, 3)))
+            20, 60) + random.normalvariate(0, 3)))
 
         super().__init__(household, target_age)
 
@@ -32,7 +32,7 @@ class head_of_house(human):
     def child_check(self, years_remaining):
         finances_check = self.household.monthly_income > self.household.household_expenses * 1.2
         room_check = self.household.bed_count >= self.household.child_count + 1
-        possible_check = self.married and self.household.child_interest
+        possible_check = self.married and (self.household.child_interest > self.household.child_count)
 
         if not (finances_check & room_check & possible_check):
             return None
@@ -51,11 +51,11 @@ class head_of_house(human):
             p = 0.03
             return None
 
+        if self.household.child_count >= 1:
+            p = 0.9 * p
+        
         if self.household.child_count >= 3:
-            p = 0.25 * p
-
-        if self.household.child_count >= 5:
-            p = 0.25 * p
+            p = 0.9 * p
 
         if self.gender == self.household.significant_other.gender:
             p = 0.25 * p

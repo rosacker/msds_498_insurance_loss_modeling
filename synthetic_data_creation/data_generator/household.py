@@ -23,7 +23,7 @@ class household:
         self.id = uuid4().hex
         self.inforce = True
         self.driviness = random.normalvariate(1, 0.2)
-        self.child_interest = random.choices([True, False], [0.85, 0.15])[0]
+        self.child_interest = random.choices([0, 1, 2, 3, 4, 5], [0.10, 0.25, 0.25, 0.2, 0.1, 0.1])[0]
         self.children = []
         self.properties = []
         self.claims = []
@@ -565,6 +565,7 @@ class household:
     def household_expenses(self):
         cost = self.people_count * 1_000
         cost += self.monthly_income * 0.2  # darn taxes
+        cost += self.monthly_income * 0.1 # savings!
         cost += sum([x.monthly_cost for x in self.properties])
         cost += sum([x.monthly_cost for x in self.vehicles])
 
