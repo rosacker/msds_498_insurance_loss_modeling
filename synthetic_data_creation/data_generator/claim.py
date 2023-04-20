@@ -25,6 +25,14 @@ class claim:
         self.id = uuid4().hex
 
         self.when_occured = self.household.tenure_years
+        
+        self.veh_had_bi_cov_ind = self.vehicle.bi_cov_ind
+        self.veh_had_pd_cov_ind = self.vehicle.pd_cov_ind
+        self.veh_had_coll_cov_ind = self.vehicle.coll_cov_ind
+        self.veh_had_comp_cov_ind = self.vehicle.comp_cov_ind
+        self.veh_had_mpc_cov_ind = self.vehicle.mpc_cov_ind
+        self.veh_had_ers_cov_ind = self.vehicle.ers_cov_ind
+        self.veh_had_ubi_cov_ind = self.vehicle.ubi_cov_ind
 
         if claim_type == 'single_car_collision':
             self.build_single_car_collision()
@@ -42,20 +50,103 @@ class claim:
             self.build_ers()
 
     def build_single_car_collision(self):
-        self.bi = 0
-        self.pd = 0
-        self.coll = 1
+        crash_type = random.choices(['tree', 'fence', 'parked_car', 'pedestrian'], [0.4, 0.3, 0.2, 0.1])[0]
+        protection = self.vehicle.protection
+        hurt_others = self.vehicle.hurt_others
+        income = self.household.annual_income
+
+        if hurt_others == 1:
+            mult = 0.8
+        elif hurt_others == 3:
+            mult = 1.2
+        else: 
+            mult = 1
+
+        p = {'pedestrian': 0.9, 'parked_car': 0.3 * mult}
+        p = p.get(crash_type, 0)
+        self.bi = int(p > random.uniform(0, 1) and self.veh_had_bi_cov_ind)
+
+        p = {'pedestrian': 0.05, 'parked_car': 0.9 * mult, 'fence': 0.9, 'tree': 0.05}
+        p = p.get(crash_type, 0)
+        self.pd = int(p > random.uniform(0, 1) and self.veh_had_pd_cov_ind)
+
+        p = {'parked_car': 0.4, 'fence': 0.05, 'tree': 0.6}
+        p = p.get(crash_type, 0)
+        if income > 150_000:
+            mult = 0.8
+        elif income > 120_000:
+            mult = 0.85
+        elif income > 90_000:
+            mult = 0.9
+        else:
+            mult = 1
+        self.coll = int(mult * p > random.uniform(0, 1) and self.veh_had_coll_cov_ind)
+
         self.comp = 0
-        self.mpc = 1
+
+        p = {'parked_car': 0.3, 'tree': 0.8}
+        p = p.get(crash_type, 0.05)
+        if protection == 1:
+            mult = 1.2
+        elif protection == 3:
+            mult = 0.8
+        else: 
+            mult = 1
+
+        self.mpc = int(mult * p > random.uniform(0, 1) and self.veh_had_mpc_cov_ind)
+
         self.ers = 0
         self.ubi = 0
 
     def build_multi_car_collision(self):
-        self.bi = 1
-        self.pd = 1
-        self.coll = 1
+        crash_type = random.choices(['fender_bender', 'serious'], [0.5, 0.5])[0]        
+        protection = self.vehicle.protection
+        hurt_others = self.vehicle.hurt_others
+        income = self.household.annual_income
+
+        if hurt_others == 1:
+            mult = 0.8
+        elif hurt_others == 3:
+            mult = 1.2
+        else: 
+            mult = 1
+
+        p = {'fender_bender': 0.05, 'serious': 0.6}
+        p = p.get(crash_type, 0)
+        self.bi = int(p*mult > random.uniform(0, 1) and self.veh_had_bi_cov_ind)
+
+        p = {'fender_bender': 0.35 * mult, 'serious': 0.95}
+        p = p.get(crash_type, 0)
+        self.pd = int(p > random.uniform(0, 1) and self.veh_had_pd_cov_ind)
+
+        if income > 150_000:
+            mult = 0.5
+        elif income > 120_000:
+            mult = 0.6
+        elif income > 90_000:
+            mult = 0.7
+        else:
+            mult = 1
+
+        p = {'fender_bender': 0.2 * mult, 'serious': 0.8}
+        p = p.get(crash_type, 0)
+
+        self.coll = int(p > random.uniform(0, 1) and self.veh_had_coll_cov_ind)
+
         self.comp = 0
-        self.mpc = 1
+
+        p = {'fender_bender': 0.05, 'serious': 0.6}
+        p = p.get(crash_type, 0.05)
+
+        if protection == 1:
+            mult = 1.2
+        elif protection == 3:
+            mult = 0.8
+        else: 
+            mult = 1
+
+        self.mpc = int(mult * p > random.uniform(0, 1) and self.veh_had_mpc_cov_ind)
+
         self.ers = 0
         self.ubi = 0
 
@@ -63,7 +154,26 @@ class claim:
         self.bi = 0
         self.pd = 0
         self.coll = 0
-        self.comp = 1
+
+        income = self.household.annual_income
+        if income > 150_000:
+            mult = 0.5
+        elif income > 120_000:
+            mult = 0.6
+        elif income > 90_000:
+            mult = 0.7
+        else:
+            mult = 1
+
+        # Check if the vehicle was garaged at the time!
+        garages = self.household.garage_count
+        veh_cnt = len(self.household.vehicles)
+        if garages > veh_cnt:
+            mult *= 0.25
+        elif garages > 0:            
+            mult *= 1 - 0.75 * (1.0 * veh_cnt/garages)
+
+        self.comp = int(mult * 1 > random.uniform(0, 1) and self.veh_had_comp_cov_ind)
         self.mpc = 0
         self.ers = 0
         self.ubi = 0
@@ -72,16 +182,51 @@ class claim:
         self.bi = 0
         self.pd = 0
         self.coll = 0
-        self.comp = 1
+
+        income = self.household.annual_income
+        if income > 150_000:
+            mult = 0.5
+        elif income > 120_000:
+            mult = 0.6
+        elif income > 90_000:
+            mult = 0.7
+        else:
+            mult = 1
+
+        # Check if the vehicle was garaged at the time!
+        garages = self.household.garage_count
+        veh_cnt = len(self.household.vehicles)
+        if garages > veh_cnt:
+            mult *= 0.25
+        elif garages > 0:    
+            mult *= 1 - 0.75 * (1.0 * veh_cnt/garages)
+
+        self.comp = int(mult * 1 > random.uniform(0, 1) and self.veh_had_comp_cov_ind)
+
         self.mpc = 0
         self.ers = 0
         self.ubi = 0
 
     def build_glass(self):
+        
+        income = self.household.annual_income
+        if income > 150_000:
+            mult = 0.2
+        elif income > 120_000:
+            mult = 0.4
+        elif income > 90_000:
+            mult = 0.6
+        elif income > 70_000:
+            mult = 0.8
+        else:
+            mult = 1
+
         self.bi = 0
         self.pd = 0
         self.coll = 0
-        self.comp = 1
+
+        self.comp = int(mult * 1 > random.uniform(0, 1) and self.veh_had_comp_cov_ind)
+
         self.mpc = 0
         self.ers = 0
         self.ubi = 0

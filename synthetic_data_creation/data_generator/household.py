@@ -347,7 +347,21 @@ class household:
     def update_vehicles(self):       
         cnt = self.driver_count 
 
+        # Probability of picking up coverages varies by risk mitigation score
+        p_major = 0.5 + 0.4 * sig(self.head_of_household.risk_mitigation_score/5)
+        p_minor = 0.4 + 0.3 * sig(self.head_of_household.risk_mitigation_score/5)
+
         if len(self.vehicles) == 0:
+            coverages = {
+                'bi' : True,
+                'pd' : True,
+                'coll' : p_major > random.uniform(0, 1),
+                'comp' : p_major > random.uniform(0, 1),
+                'mpc' : p_minor > random.uniform(0, 1),
+                'ers' : p_minor > random.uniform(0, 1),
+                'ubi' : p_minor > random.uniform(0, 1)
+            }
+
             if self.driver_count <= 1:
                 options = [
                     *[self.generate_veh_list_from_scratch(1) for i in range(10)],
@@ -361,6 +375,26 @@ class household:
                 ]
 
         else:
+            vehicles = self.vehicles            
+            
+            coverages = {
+                'coll' : any([x.coll_cov_ind > 0 for x in vehicles]),
+                'comp' : any([x.comp_cov_ind > 0 for x in vehicles]),
+                'mpc' : any([x.mpc_cov_ind > 0 for x in vehicles]),
+                'ers' : any([x.ers_cov_ind > 0 for x in vehicles]),
+                'ubi' : any([x.ubi_cov_ind > 0 for x in vehicles])
+            }
+
+            # Decide if we want to modify any of the coverages randomly
+            p_upgrade = 0.08 * sig(self.head_of_household.risk_mitigation_score/5)
+            p_downgrade = 0.05 - 0.05 * sig(self.head_of_household.risk_mitigation_score/5)
+            coverages = {key: value & (p_downgrade > random.uniform(0, 1)) for key, value in coverages.items()}
+            coverages = {key: value & (p_upgrade > random.uniform(0, 1)) for key, value in coverages.items()}
+ 
+            # Mandatory!
+            coverages['bi'] = True
+            coverages['pd'] = True
+
             options = [
                 frozenset(self.vehicles), 
                 *[self.generate_veh_list(add_car = True, remove_car = True) for i in range(5)],
@@ -375,7 +409,17 @@ class household:
         # If there are no good veh options, just buy a few crappy sedan I guess :P 
         if best_score < -100:
             self.vehicles = [vehicle(self, 'sedan', 20) for i in range(max(cnt, 1))]
-            
+        new_vehicles = options[best_score]
+
+        for veh in new_vehicles:
+            veh.bi_cov_ind = coverages['bi']
+            veh.pd_cov_ind = coverages['pd']
+            veh.coll_cov_ind = coverages['coll']
+            veh.comp_cov_ind = coverages['comp']
+            veh.mpc_cov_ind = coverages['mpc']
+            veh.ers_cov_ind = coverages['ers']
+            veh.ubi_cov_ind = coverages['ubi']
+
         self.vehicles = options[best_score]
 
     def update_house(self):
@@ -430,6 +474,7 @@ class household:
         claims = [x for x in self.claims if (x.driver_in_force or x.driver is None) and x.how_old != 0 and x.paid_indicator]
 
         results = {
+            'household_id': self.id,
             'inforce': self.inforce,
             'household_tenure': self.tenure_years,
             'min_driver_tenure': self.min_driver_tenure,

@@ -28,8 +28,6 @@ class vehicle:
         self.mpc_cov_ind = False
         self.ers_cov_ind = False
         self.ubi_cov_ind = False
-        self.coll_cov = None
-        self.comp_cov = None
 
         if vehicle_type == 'pickup':
             self.build_pickup()
@@ -44,8 +42,6 @@ class vehicle:
 
         self.purchase_price = self.msrp * self.depreciation_rate ** age
         self.value = self.purchase_price
-
-        self.determine_coverages(first_time = True)
 
     def __hash__(self):
         return hash(self.id)
@@ -100,19 +96,6 @@ class vehicle:
         self.protection = 2
         self.hurt_others = 2
 
-    def determine_coverages(self, first_time = False):
-        self.coll_cov_ind = False
-        self.comp_cov_ind = False
-        self.mpc_cov_ind = False
-        self.ers_cov_ind = False
-        self.ubi_cov_ind = False
-
-        if self.coll_cov_ind:
-            self.coll_cov = 50
-        
-        if self.comp_cov_ind:
-            self.comp_cov = 50
-
     def move_forward_n_years(self, n):
         self.age += n
         self.years_owned += n
@@ -151,7 +134,14 @@ class vehicle:
             'vehicle_id': self.id,
             'vehicle_age': self.age,
             'vehicle_years_owned': self.years_owned,
-            'vehicle_type': self.vehicle_type
+            'vehicle_type': self.vehicle_type,
+            'coverage_bi': self.bi_cov_ind,
+            'coverage_pd': self.pd_cov_ind,
+            'coverage_coll': self.coll_cov_ind,
+            'coverage_comp': self.comp_cov_ind,
+            'coverage_mpc': self.mpc_cov_ind,
+            'coverage_ers': self.ers_cov_ind,
+            'coverage_ubi': self.ubi_cov_ind
         }
 
         claims = [x for x in self.prior_claims if x.paid_indicator and (x.driver_in_force  or x.driver is None)]
