@@ -1,16 +1,15 @@
 import random
-from numpy.random import poisson
+#from numpy.random import poisson
 from statistics import mean
 from math import sqrt
 from uuid import uuid4
 
-from .utils import sig
+from .utils import sig, poisson
 
 from .head_of_house import head_of_house
 from .housing_property import housing_property
 from .vehicle import vehicle
 from .claim import claim
-
 
 class household:
     """
@@ -64,9 +63,11 @@ class household:
 
             if not self.inforce:
                 return None
-            else:
-                self.update_vehicles()
-                self.generate_claims()
+            
+            if 0.5 < random.uniform(0, 1):
+                    self.update_vehicles()
+            
+            self.generate_claims()
 
 
     def generate_claims(self):
@@ -75,53 +76,62 @@ class household:
         for key, mileage in mileage.items():
             driver, veh, road_type = key
 
+            driving_hazard = driver.driving_hazard
+
             hazards = {
                 'single_car_collision': (
                     0.03 * sqrt(mileage/10000) *
                     (0.5 if road_type == 'highway' else 1) *
-                    (driver.driving_hazard ** 0.9) *
+                    (driving_hazard ** 0.9) *
                     min(1, 1 + 0.01 * (veh.age - 5))
                 ),
                 'multi_car_collision': (
                     0.03 * sqrt(mileage/10000) *
                     (0.25 if road_type == 'highway' else 1) *
-                    (driver.driving_hazard) *
+                    (driving_hazard) *
                     min(1, 1 + 0.0125 * (veh.age - 5))
                 ),
                 'theft': (
                     0.001 * sqrt(mileage/10000) *
                     (0.05 if road_type == 'highway' else 1) *
-                    (driver.driving_hazard ** 0.1) *
+                    (driving_hazard ** 0.1) *
                     (1.5 if veh.household.primary_house.location == 'downtown' else 1)
                 ),
                 'hail': (                    
                     0.001 * sqrt(mileage/10000) *
                     (1.3 if road_type == 'highway' else 1) *
-                    (driver.driving_hazard ** 0.1) *
+                    (driving_hazard ** 0.1) *
                     (0.6 if veh.household.primary_house.location == 'downtown' else 1)
                 ),
                 'glass': (
                     0.03 * sqrt(mileage/10000) *
                     (2.1 if road_type == 'highway' else 1) *
-                    (driver.driving_hazard ** 0.1)
+                    (driving_hazard ** 0.1)
                 ),
                 'ubi': (
                     0.03 * sqrt(mileage/10000) *
                     (0.3 if road_type == 'highway' else 1) *
-                    (driver.driving_hazard ** 0.4)
+                    (driving_hazard ** 0.4)
                 ),
                 'ers': (
                     0.03 * sqrt(mileage/10000) *
                     (1.5 if road_type == 'highway' else 1) *
-                    (driver.driving_hazard ** 0.3) *
+                    (driving_hazard ** 0.3) *
                     min(1, 1 + 0.005 * veh.age + 0.1 * max(veh.age - 7, 0) + 0.1 * max(veh.age - 12, 0) - 0.1 * max(veh.age - 17, 0) - 0.05 * max(veh.age - 21, 0))
                 ),
             }
 
-            for claim_type, hazard in hazards.items():
-                n = int(poisson(hazard, 1)[0])
-                if n > 0:
-                    for _ in range(n):
+            hazard_rates = list(hazards.values())
+            claim_types = list(hazards.keys())
+            #n = poisson(hazard_rates)
+            n = [poisson(x) for x in hazard_rates]
+
+            for i in range(len(n)):
+                claim_type = claim_types[i]
+                count = n[i]
+
+                if count > 0:
+                    for _ in range(count):
                         if claim_type in ['theft', 'hail']:
                             assigned_driver = None
                         else:
@@ -129,7 +139,6 @@ class household:
 
                         self.claims.append(claim(claim_type, self, vehicle=veh, driver=assigned_driver))
             
-
     def determine_mileage(self):
         mileage = {}
 
@@ -188,7 +197,7 @@ class household:
 
         if self.significant_other is None:
             # Driver gets to drive everything, find their favorite
-            head_of_house_preferences = [self.head_of_household.vehicle_interest(veh) for veh in vehicles]             
+            head_of_house_preferences = [self.head_of_household.vehicle_interest(veh, vehicles) for veh in vehicles]             
             
             first_pick = pick_nth(head_of_house_preferences, 1)  
             if veh_cnt == 2:
@@ -210,8 +219,8 @@ class household:
         else:
             # Got to pick which driver gets each car. Start by calculating the parents to their top 2 fav cars
 
-            hoh_preferences = [self.head_of_household.vehicle_interest(veh) for veh in vehicles]
-            so_preferences = [self.significant_other.vehicle_interest(veh) for veh in vehicles]
+            hoh_preferences = [self.head_of_household.vehicle_interest(veh, vehicles) for veh in vehicles]
+            so_preferences = [self.significant_other.vehicle_interest(veh, vehicles) for veh in vehicles]
 
             hoh_first_pick = pick_nth(hoh_preferences, 1) 
             so_first_pick = pick_nth(so_preferences, 1)
@@ -249,7 +258,7 @@ class household:
             
             other_drivers = [driver for driver in self.children if driver.is_driving_age]
            
-            preferences = [[x.vehicle_interest(veh) ** 2 if i not in claimed_cars else (0.75 * x.vehicle_interest(veh)) ** 2
+            preferences = [[x.vehicle_interest(veh, vehicles) ** 2 if i not in claimed_cars else (0.75 * x.vehicle_interest(veh, vehicles)) ** 2
                                 for i, veh in enumerate(vehicles)] 
                                 for x in other_drivers]
             balanced_preferences = [[x/sum(y) for x in y] for y in preferences]                
@@ -270,6 +279,7 @@ class household:
     def remove_child(self, removal_child):
         """Remove a child when they get to an old enough age"""
 
+        removal_child.inforce = False
         self.children = [x for x in self.children if x != removal_child]
 
     def generate_veh_list_from_scratch(self, n):
@@ -301,20 +311,22 @@ class household:
         return frozenset(vehicles)
 
     def evaluate_new_vehicles(self, vehicles):
-        drivers = self.drivers
-        prefs = {(driver, veh): driver.vehicle_interest(veh) for veh in vehicles for driver in drivers}
-        allocation = self.determine_veh_assignements(vehicles)
-        cost = 12 * sum([x.monthly_cost for x in vehicles])
-
-        match_score = 0
-
         if len(vehicles) == 0:
             return -1000
-
+        
+        cost = 12 * sum([x.monthly_cost for x in vehicles])        
         excess_cost = (cost - self.annual_income * 0.2 * 0.7)
         if excess_cost >= 0:
             return -500
+                
+        drivers = self.drivers
+        if abs(len(drivers)- len(vehicles)) > 2:
+            return -250
+        
+        prefs = {(driver, veh): driver.vehicle_interest(veh, vehicles) for veh in vehicles for driver in drivers}
+        allocation = self.determine_veh_assignements(vehicles)
 
+        match_score = 0
         for key, value in prefs.items():
             driver, veh = key
             match_score += value * allocation[key]
@@ -332,37 +344,37 @@ class household:
 
         return match_score
     
-    def update_vehicles(self):        
+    def update_vehicles(self):       
+        cnt = self.driver_count 
+
         if len(self.vehicles) == 0:
-            if self.driver_count <= 2:
+            if self.driver_count <= 1:
                 options = [
                     *[self.generate_veh_list_from_scratch(1) for i in range(10)],
                     *[self.generate_veh_list_from_scratch(2) for i in range(10)]
                 ]
             else:
                 options = [
-                    *[self.generate_veh_list_from_scratch(2) for i in range(10)],
-                    *[self.generate_veh_list_from_scratch(3) for i in range(10)],
-                    *[self.generate_veh_list_from_scratch(4) for i in range(10)],
-                    *[self.generate_veh_list_from_scratch(5) for i in range(5)],
+                    *[self.generate_veh_list_from_scratch(cnt - 1) for i in range(5)],
+                    *[self.generate_veh_list_from_scratch(cnt) for i in range(5)],
+                    *[self.generate_veh_list_from_scratch(cnt + 1) for i in range(5)],
                 ]
-
 
         else:
             options = [
                 frozenset(self.vehicles), 
-                *[self.generate_veh_list(add_car = True, remove_car = True) for i in range(10)],
-                *[self.generate_veh_list(add_car = True, remove_car = False) for i in range(10)],
-                *[self.generate_veh_list(add_car = False, remove_car = False) for i in range(3)],
+                *[self.generate_veh_list(add_car = True, remove_car = True) for i in range(5)],
+                *[self.generate_veh_list(add_car = True, remove_car = False) for i in range(5)],
+                *[self.generate_veh_list(add_car = False, remove_car = True) for i in range(3)],
                 ]
 
         options = [list(x) for x in set(options)]
         scores = [self.evaluate_new_vehicles(x) for x in options]
         best_score = [scores.index(i) for i in sorted(scores, reverse=True)][:1][0]
 
-        # If there are no good veh options, just buy a crappy van I guess :P 
+        # If there are no good veh options, just buy a few crappy sedan I guess :P 
         if best_score < -100:
-            self.vehicles = [vehicle(self, 'van', 25)]
+            self.vehicles = [vehicle(self, 'sedan', 20) for i in range(max(cnt, 1))]
             
         self.vehicles = options[best_score]
 
@@ -415,6 +427,8 @@ class household:
 
     @property
     def summary(self):
+        claims = [x for x in self.claims if (x.driver_in_force or x.driver is None) and x.how_old != 0 and x.paid_indicator]
+
         results = {
             'inforce': self.inforce,
             'household_tenure': self.tenure_years,
@@ -433,7 +447,7 @@ class household:
             'multiline_personal_article_policy': self.multiline_personal_article_policy,
             'vehicle_info': [x.summary for x in self.vehicles],
             'driver_info': [x.summary for x in self.drivers],
-            'claims_info': [x.summary for x in self.claims if (x.driver_in_force or x.driver is None) and x.how_old != 0 and x.paid_indicator],
+            'claims_info': [x.summary for x in claims],
             'garaging_location': self.garaging_location
         }
 
@@ -455,49 +469,49 @@ class household:
 
         # Count of claims
         claim_counts = {
-            f'household_claim_cnt_all_{age}': len([x for x in self.claims if (x.driver_in_force  or x.driver is None) and x.how_old == age and x.paid_indicator])
+            f'household_claim_cnt_all_{age}': len([x for x in claims if x.how_old == age and x.paid_indicator])
             for age in range(1, 16)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'household_claim_cnt_bi_{age}': len([x for x in self.claims if (x.driver_in_force  or x.driver is None) and x.how_old == age and x.bi == 1 and x.paid_indicator])
+            f'household_claim_cnt_bi_{age}': len([x for x in claims if x.how_old == age and x.bi == 1 and x.paid_indicator])
             for age in range(1, 16)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'household_claim_cnt_pd_{age}': len([x for x in self.claims if (x.driver_in_force  or x.driver is None) and x.how_old == age and x.pd == 1 and x.paid_indicator])
+            f'household_claim_cnt_pd_{age}': len([x for x in claims if x.how_old == age and x.pd == 1 and x.paid_indicator])
             for age in range(1, 16)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'household_claim_cnt_coll_{age}': len([x for x in self.claims if (x.driver_in_force  or x.driver is None) and x.how_old == age and x.coll == 1 and x.paid_indicator])
+            f'household_claim_cnt_coll_{age}': len([x for x in claims if x.how_old == age and x.coll == 1 and x.paid_indicator])
             for age in range(1, 16)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'household_claim_cnt_comp_{age}': len([x for x in self.claims if (x.driver_in_force  or x.driver is None) and x.how_old == age and x.comp == 1 and x.paid_indicator])
+            f'household_claim_cnt_comp_{age}': len([x for x in claims if x.how_old == age and x.comp == 1 and x.paid_indicator])
             for age in range(1, 16)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'household_claim_cnt_mpc_{age}': len([x for x in self.claims if (x.driver_in_force  or x.driver is None) and x.how_old == age and x.mpc == 1 and x.paid_indicator])
+            f'household_claim_cnt_mpc_{age}': len([x for x in claims if x.how_old == age and x.mpc == 1 and x.paid_indicator])
             for age in range(1, 16)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'household_claim_cnt_ers_{age}': len([x for x in self.claims if (x.driver_in_force  or x.driver is None) and x.how_old == age and x.ers == 1 and x.paid_indicator])
+            f'household_claim_cnt_ers_{age}': len([x for x in claims if x.how_old == age and x.ers == 1 and x.paid_indicator])
             for age in range(1, 16)
         }
         results.update(**claim_counts)
 
         claim_counts = {
-            f'household_claim_cnt_ubi_{age}': len([x for x in self.claims if (x.driver_in_force  or x.driver is None) and x.how_old == age and x.ubi == 1 and x.paid_indicator])
+            f'household_claim_cnt_ubi_{age}': len([x for x in claims if x.how_old == age and x.ubi == 1 and x.paid_indicator])
             for age in range(1, 16)
         }
         results.update(**claim_counts)
@@ -505,14 +519,14 @@ class household:
         # Time Since Claim
         def min_with_none(x): return min(x) if len(x) > 0 else None
         claim_counts = {
-            'household_claim_time_since_all': min_with_none([x.how_old for x in self.claims if (x.driver_in_force  or x.driver is None) and 1 <= x.how_old <= 16 and x.paid_indicator]),
-            'household_claim_time_since_bi': min_with_none([x.how_old for x in self.claims if (x.driver_in_force  or x.driver is None) and 1 <= x.how_old <= 16 and x.bi == 1 and x.paid_indicator]),
-            'household_claim_time_since_pd': min_with_none([x.how_old for x in self.claims if (x.driver_in_force  or x.driver is None) and 1 <= x.how_old <= 16 and x.pd == 1 and x.paid_indicator]),
-            'household_claim_time_since_comp': min_with_none([x.how_old for x in self.claims if (x.driver_in_force  or x.driver is None) and 1 <= x.how_old <= 16 and x.comp == 1 and x.paid_indicator]),
-            'household_claim_time_since_coll': min_with_none([x.how_old for x in self.claims if (x.driver_in_force  or x.driver is None) and 1 <= x.how_old <= 16 and x.coll == 1 and x.paid_indicator]),
-            'household_claim_time_since_mpc': min_with_none([x.how_old for x in self.claims if (x.driver_in_force  or x.driver is None) and 1 <= x.how_old <= 16 and x.mpc == 1 and x.paid_indicator]),
-            'household_claim_time_since_ers': min_with_none([x.how_old for x in self.claims if (x.driver_in_force  or x.driver is None) and 1 <= x.how_old <= 16 and x.ers == 1 and x.paid_indicator]),
-            'household_claim_time_since_ubi': min_with_none([x.how_old for x in self.claims if (x.driver_in_force  or x.driver is None) and 1 <= x.how_old <= 16 and x.ubi == 1 and x.paid_indicator])
+            'household_claim_time_since_all': min_with_none([x.how_old for x in claims if 1 <= x.how_old <= 16]),
+            'household_claim_time_since_bi': min_with_none([x.how_old for x in claims if 1 <= x.how_old <= 16 and x.bi == 1]),
+            'household_claim_time_since_pd': min_with_none([x.how_old for x in claims if 1 <= x.how_old <= 16 and x.pd == 1]),
+            'household_claim_time_since_comp': min_with_none([x.how_old for x in claims if 1 <= x.how_old <= 16 and x.comp == 1]),
+            'household_claim_time_since_coll': min_with_none([x.how_old for x in claims if 1 <= x.how_old <= 16 and x.coll == 1]),
+            'household_claim_time_since_mpc': min_with_none([x.how_old for x in claims if 1 <= x.how_old <= 16 and x.mpc == 1]),
+            'household_claim_time_since_ers': min_with_none([x.how_old for x in claims if 1 <= x.how_old <= 16 and x.ers == 1]),
+            'household_claim_time_since_ubi': min_with_none([x.how_old for x in claims if 1 <= x.how_old <= 16 and x.ubi == 1])
         }
         results.update(**claim_counts)
 
@@ -599,11 +613,23 @@ class household:
     
     @property
     def non_driver_cnt(self):
-        return len([x for x in self.household_members if x.is_driving_age])
+        if len(self.children) == 0:
+            return 0
+        
+        return len([x for x in self.children if not x.is_driving_age])
 
     @property
     def annual_income(self):
-        return sum([x.annual_income for x in self.household_members])
+        x = 0
+        x += self.head_of_household.annual_income
+
+        if self.significant_other is not None:
+            x+= self.significant_other.annual_income
+
+        if len(self.children) > 0:
+            x+= sum([x.annual_income for x in self.children])
+            
+        return x
 
     @property
     def monthly_income(self):

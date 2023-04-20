@@ -17,11 +17,13 @@ class human:
         self.age = 0
         self.tenure_years = 0
         self.driving_experience = 0
+        self.is_driving_age = False
         self.gender = random.choices(['m', 'f'], weights=[0.5, 0.5])[
             0] if target_gender is None else target_gender
         self.married = False
         self.education = 'uneducated'
         self.job_class = 0
+        self.inforce = True
 
 
         # Assume everyone has a hidden favorite type of car
@@ -73,11 +75,8 @@ class human:
             if rate > random.uniform(0, 1):
                 self.evaluate_housing()
 
-            # People don't shop for cars every year!
-            if 0 > random.uniform(0, 1):
-                self.evaluate_vehicles()
-
-            if self.is_driving_age:
+            if self.years_licensed >= 0:
+                self.is_driving_age = True
                 self.driving_experience += random.uniform(0, 1)
 
             if self.gender == 'm' and (23 < self.age < 27):
@@ -164,8 +163,10 @@ class human:
         self.married = True
         self.risk_mitigation_score += 0.15
 
-    def vehicle_interest(self, vehicle, vehicles = None):
+    def vehicle_interest(self, vehicle, vehicles = []):
         """Determines the interest a human has in a specific car"""
+        vehicles = self.household.vehicles if vehicles == [] else vehicles
+
         # No one wants to drive an older car!
         interest = max(
             2
@@ -190,13 +191,13 @@ class human:
             interest *= (1 + vehicle.parent_interest)
 
         # Don't want kids driving the fancy car!
-        if type(self).__name__ == 'child' and self.household.vehicles != []:
-            veh_values = [x.value for x in self.household.vehicles]
+        if type(self).__name__ == 'child' and vehicles != []:
+            veh_values = [x.value for x in vehicles]
             veh_values.sort(reverse = True)
 
             if vehicle.value >= veh_values[0]:
                 interest *= 0.25
-            elif len(self.household.vehicles) > 1 and vehicle.value >= veh_values[1]:
+            elif len(vehicles) > 1 and vehicle.value >= veh_values[1]:
                 interest *= 0.35
             elif vehicle.value > 15_000 and self.age <= 21:
                 interest *= 0.5
@@ -254,24 +255,15 @@ class human:
         return int(300 + 600 * sig(0.2 * self.financial_risk_score))
 
     @property
-    def driving_experience_pct(self):
-        return sig(1.5*self.driving_experience-5)
-
-    @property
-    def risk_mitigation_pct(self):
-        return sig(self.risk_mitigation_score/2.5-0.75)
-
-    @property
     def driving_hazard(self):
+        driving_experience_pct = sig(1.5*self.driving_experience-5)
+        risk_mitigation_pct = sig(self.risk_mitigation_score/2.5-0.75)
+
         return 0.7 + 1.3 * sig(
-            1 - 1.5 * self.driving_experience_pct - 1.5 * self.risk_mitigation_pct 
+            1 - 1.5 * driving_experience_pct - 1.5 * risk_mitigation_pct
             + 0.05 * max(self.age-55, 0) + 0.05 * max(self.age-65, 0) - 0.075 * max(self.age-75, 0)
         )
 
     @property
     def years_licensed(self):
         return self.age - self.age_licensed
-
-    @property
-    def is_driving_age(self):
-        return self.years_licensed >= 0

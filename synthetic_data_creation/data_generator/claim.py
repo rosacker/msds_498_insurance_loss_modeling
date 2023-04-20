@@ -132,7 +132,7 @@ class claim:
         if self.driver is None or self.household.drivers is None:
             return False
 
-        return any(self.driver == x for x in self.household.drivers)
+        return self.driver.inforce
 
     @property
     def how_old(self):

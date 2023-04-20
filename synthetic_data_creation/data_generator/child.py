@@ -16,7 +16,7 @@ class child(human):
                          upbringing_score=upbringing_score)
 
     def leave_household(self):
-        self_sufficent = (self.annual_income >= 35_000)
+        self_sufficent = (self.annual_income >= 30_000)
         older_kid = (self.age >= 25)
 
         score = 0.5 * self_sufficent + 0.25 * older_kid
