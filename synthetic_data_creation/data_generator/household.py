@@ -92,13 +92,13 @@ class household:
                     min(1, 1 + 0.0125 * (veh.age - 5))
                 ),
                 'theft': (
-                    0.001 * sqrt(mileage/10000) *
+                    0.01 * sqrt(mileage/10000) *
                     (0.05 if road_type == 'highway' else 1) *
                     (driving_hazard ** 0.1) *
                     (1.5 if veh.household.primary_house.location == 'downtown' else 1)
                 ),
                 'hail': (                    
-                    0.001 * sqrt(mileage/10000) *
+                    0.01 * sqrt(mileage/10000) *
                     (1.3 if road_type == 'highway' else 1) *
                     (driving_hazard ** 0.1) *
                     (0.6 if veh.household.primary_house.location == 'downtown' else 1)
@@ -114,7 +114,7 @@ class household:
                     (driving_hazard ** 0.4)
                 ),
                 'ers': (
-                    0.03 * sqrt(mileage/10000) *
+                    0.015 * sqrt(mileage/10000) *
                     (1.5 if road_type == 'highway' else 1) *
                     (driving_hazard ** 0.3) *
                     min(1, 1 + 0.005 * veh.age + 0.1 * max(veh.age - 7, 0) + 0.1 * max(veh.age - 12, 0) - 0.1 * max(veh.age - 17, 0) - 0.05 * max(veh.age - 21, 0))
@@ -348,8 +348,8 @@ class household:
         cnt = self.driver_count 
 
         # Probability of picking up coverages varies by risk mitigation score
-        p_major = 0.5 + 0.4 * sig(self.head_of_household.risk_mitigation_score/5)
-        p_minor = 0.4 + 0.3 * sig(self.head_of_household.risk_mitigation_score/5)
+        p_major = 0.5 + 0.5 * sig(self.head_of_household.risk_mitigation_score/5)
+        p_minor = 0.3 + 0.6 * sig(self.head_of_household.risk_mitigation_score/5)
 
         if len(self.vehicles) == 0:
             coverages = {
@@ -386,10 +386,10 @@ class household:
             }
 
             # Decide if we want to modify any of the coverages randomly
-            p_upgrade = 0.08 * sig(self.head_of_household.risk_mitigation_score/5)
+            p_upgrade = 0.12 * sig(self.head_of_household.risk_mitigation_score/5)
             p_downgrade = 0.05 - 0.05 * sig(self.head_of_household.risk_mitigation_score/5)
-            coverages = {key: value & (p_downgrade > random.uniform(0, 1)) for key, value in coverages.items()}
-            coverages = {key: value & (p_upgrade > random.uniform(0, 1)) for key, value in coverages.items()}
+            coverages = {key: False if p_downgrade > random.uniform(0, 1) else value for key, value in coverages.items()}
+            coverages = {key: value | (p_upgrade > random.uniform(0, 1)) for key, value in coverages.items()}
  
             # Mandatory!
             coverages['bi'] = True
@@ -454,17 +454,17 @@ class household:
         # Low credit score individuals will shop more
         score = self.credit_score
         if score <= 500:
-            p = 0.125
+            p = 0.10
         elif score <= 600:
-            p = 0.075
-        elif score <= 700:
             p = 0.05
-        else:
+        elif score <= 700:
             p = 0.025
+        else:
+            p = 0.01
 
         # General mortality
         if hh_age > 75:
-            p += ((hh_age - 75)/95) ** 0.5
+            p += ((hh_age - 75)/95) ** 2
 
         if p > random.uniform(0, 1):
             self.inforce = False

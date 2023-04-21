@@ -49,7 +49,7 @@ class human:
         self.risk_mitigation_score = self.upbringing_score + \
             random.normalvariate(0, 0.5)
         self.job_risk_deviation = random.normalvariate(0, 0.5)
-        self.financial_risk_deviation = random.normalvariate(0, 1)
+        self.financial_risk_deviation = random.normalvariate(0, 0.5)
 
         self.move_forward_n_years(target_age)
         
@@ -77,18 +77,21 @@ class human:
 
             if self.years_licensed >= 0:
                 self.is_driving_age = True
-                self.driving_experience += random.uniform(0, 1)
+
+                if self.gender == 'm':
+                    self.driving_experience += random.uniform(0.1, 0.75)
+                elif self.gender == 'f':
+                    self.driving_experience += random.uniform(0.1, 0.6)
 
             if self.gender == 'm' and (23 < self.age < 27):
-                self.risk_mitigation_score += random.uniform(-0.05, 0.15)
-            elif self.gender == 'f' and (18 < self.age < 23):
-                self.risk_mitigation_score += random.uniform(-0.05, 0.15)
-            elif self.age < 23:
-                self.risk_mitigation_score += random.uniform(-0.05, 0.05)
-            else:
                 self.risk_mitigation_score += random.uniform(-0.05, 0.1)
+            elif self.gender == 'f' and (18 < self.age < 23):
+                self.risk_mitigation_score += random.uniform(-0.05, 0.1)
+            elif self.age < 23:
+                self.risk_mitigation_score += random.uniform(-0.05, 0.06)
+            else:
+                self.risk_mitigation_score += random.uniform(-0.025, 0.05)
 
-            self.risk_mitigation_score += random.uniform(-0.05, 0.1)
             self.child_check(years_remaining=n - 1 - i)
 
             self.leave_household()
@@ -259,9 +262,9 @@ class human:
         driving_experience_pct = sig(1.5*self.driving_experience-5)
         risk_mitigation_pct = sig(self.risk_mitigation_score/2.5-0.75)
 
-        return 0.7 + 1.3 * sig(
-            1 - 1.5 * driving_experience_pct - 1.5 * risk_mitigation_pct
-            + 0.05 * max(self.age-55, 0) + 0.05 * max(self.age-65, 0) - 0.075 * max(self.age-75, 0)
+        return 0.5 + 2.3 * sig(
+            1 - 1.5 * driving_experience_pct - 2.0 * risk_mitigation_pct
+            + 0.025 * max(self.age-55, 0) + 0.05 * max(self.age-65, 0) - 0.05 * max(self.age-75, 0)
         )
 
     @property

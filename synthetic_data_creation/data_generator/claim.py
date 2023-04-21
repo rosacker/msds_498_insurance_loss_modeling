@@ -70,7 +70,7 @@ class claim:
         p = p.get(crash_type, 0)
         self.pd = int(p > random.uniform(0, 1) and self.veh_had_pd_cov_ind)
 
-        p = {'parked_car': 0.4, 'fence': 0.05, 'tree': 0.6}
+        p = {'parked_car': 0.85, 'fence': 0.15, 'tree': 0.9, 'pedestrian': 0.15}
         p = p.get(crash_type, 0)
         if income > 150_000:
             mult = 0.8
@@ -128,7 +128,7 @@ class claim:
         else:
             mult = 1
 
-        p = {'fender_bender': 0.2 * mult, 'serious': 0.8}
+        p = {'fender_bender': 0.3 * mult, 'serious': 0.95}
         p = p.get(crash_type, 0)
 
         self.coll = int(p > random.uniform(0, 1) and self.veh_had_coll_cov_ind)
@@ -231,22 +231,58 @@ class claim:
         self.ers = 0
         self.ubi = 0
 
-    def build_ubi(self):
+    def build_ubi(self): 
+        protection = self.vehicle.protection
+        crash_type = random.choices(['fender_bender', 'serious'], [0.5, 0.5])[0]
+        income = self.household.annual_income
+
         self.bi = 0
         self.pd = 0
-        self.coll = 1
+
+        if income > 150_000:
+            mult = 0.5
+        elif income > 120_000:
+            mult = 0.6
+        elif income > 90_000:
+            mult = 0.7
+        else:
+            mult = 1
+
+        p = {'fender_bender': 0.2 * mult, 'serious': 0.8}
+        p = p.get(crash_type, 0)
+
+        self.coll = int(p > random.uniform(0, 1) and self.veh_had_coll_cov_ind)
+
         self.comp = 0
         self.mpc = 0
         self.ers = 0
-        self.ubi = 1
+
+        if protection == 1:
+            mult = 1.2
+        elif protection == 3:
+            mult = 0.8
+        else: 
+            mult = 1
+
+        p = {'fender_bender': 0.3, 'serious': 0.8}
+        p = p.get(crash_type, 0)
+        
+        self.ubi = int(p * mult > random.uniform(0, 1) and self.veh_had_ubi_cov_ind)
 
     def build_ers(self):
+
+        if self.driver.gender == 'm':
+            p = 0.7        
+        elif self.driver.gender == 'f':
+            p = 0.85     
+        
+        self.ers = int(p > random.uniform(0, 1) and self.veh_had_ubi_cov_ind)
+    
         self.bi = 0
         self.pd = 0
         self.coll = 0
         self.comp = 0
         self.mpc = 0
-        self.ers = 1
         self.ubi = 0
 
     @property

@@ -20,8 +20,10 @@ class head_of_house(human):
         self.household = household
 
     def start_life(self, household):
-        target_age = max(16, int(random.uniform(
-            20, 60) + random.normalvariate(0, 3)))
+        target_age = max(16, int(
+            random.triangular(18, 80, 23) + random.normalvariate(0, 3)
+            )
+        )
 
         super().__init__(household, target_age)
 
