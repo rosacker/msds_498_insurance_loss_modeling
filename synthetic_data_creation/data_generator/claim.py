@@ -298,8 +298,15 @@ class claim:
             'comp_ind': self.comp,
             'mpc_ind': self.mpc,
             'ers_ind': self.ers,
-            'ubi_ind': self.ubi,
-            'claim_age': self.how_old # Subtract 1 so subsequent claims would be 0
+            'ubi_ind': self.ubi,                
+            'veh_had_bi_cov_ind': self.veh_had_bi_cov_ind,
+            'veh_had_pd_cov_ind': self.veh_had_pd_cov_ind,
+            'veh_had_coll_cov_ind': self.veh_had_coll_cov_ind,
+            'veh_had_comp_cov_ind': self.veh_had_comp_cov_ind,
+            'veh_had_mpc_cov_ind': self.veh_had_mpc_cov_ind,
+            'veh_had_ers_cov_ind': self.veh_had_ers_cov_ind,
+            'veh_had_ubi_cov_ind': self.veh_had_ubi_cov_ind,
+            'claim_age': self.how_old
         }
 
         return results

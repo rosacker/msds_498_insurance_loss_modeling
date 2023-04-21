@@ -123,7 +123,7 @@ class household:
                     (driving_hazard ** 0.4)
                 ),
                 'ers': (
-                    0.015 * sqrt(mileage/10000) *
+                    0.03 * sqrt(mileage/10000) *
                     (1.5 if road_type == 'highway' else 1) *
                     (driving_hazard ** 0.3) *
                     min(1, 1 + 0.005 * veh.age + 0.1 * max(veh.age - 7, 0) + 0.1 * max(veh.age - 12, 0) - 0.1 * max(veh.age - 17, 0) - 0.05 * max(veh.age - 21, 0))
