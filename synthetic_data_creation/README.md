@@ -44,5 +44,5 @@ household -->|Has History Of| claim
 - [x] Build way to export data to Weights & Bias  
 - [x] Add "all vehicles" to the exported data
 - [x] Write metadata on all fields  
-- [ ] Update metadata file with additional fields
+- [x] Update metadata file with additional fields
 - [x] Run code profiler and figure out if anything is running too much

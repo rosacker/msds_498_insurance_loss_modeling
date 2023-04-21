@@ -32,8 +32,8 @@ class head_of_house(human):
         self.household.significant_other = spouse(self.household, self, years_remaining)
 
     def child_check(self, years_remaining):
-        finances_check = self.household.monthly_income > self.household.household_expenses * 1.2
-        room_check = self.household.bed_count >= self.household.child_count + 1
+        finances_check = (self.household.monthly_income - self.household.household_expenses > 1000)
+        room_check = self.household.bed_count >= len(self.household.household_members) + 1
         possible_check = self.married and (self.household.child_interest > self.household.child_count)
 
         if not (finances_check & room_check & possible_check):

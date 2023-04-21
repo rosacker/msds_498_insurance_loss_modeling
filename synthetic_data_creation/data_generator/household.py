@@ -23,7 +23,7 @@ class household:
         self.id = uuid4().hex
         self.inforce = True
         self.driviness = random.normalvariate(1, 0.2)
-        self.child_interest = random.choices([0, 1, 2, 3, 4, 5], [0.10, 0.25, 0.25, 0.2, 0.1, 0.1])[0]
+        self.child_interest = random.choices([0, 1, 2, 3, 4, 5], [0.10, 0.15, 0.3, 0.3, 0.1, 0.05])[0]
         self.children = []
         self.properties = []
         self.claims = []
@@ -623,6 +623,9 @@ class household:
             'child_count': self.child_count,
             'monthly_income': self.monthly_income,
             'monthly_expenses': self.household_expenses,
+            'best_job': max([x.job_class for x in self.household_members]),
+            'hoh_education': self.head_of_household.education,
+            'net_monthly': self.monthly_income - self.household_expenses,
             'min_driver_hazard': self.min_driver_hazard,
             'max_driver_hazard': self.max_driver_hazard,
             'mean_driver_hazard': self.mean_driver_hazard,

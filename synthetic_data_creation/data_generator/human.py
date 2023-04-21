@@ -40,7 +40,7 @@ class human:
                                            0.7, 0.1, 0.1, 0.05, 0.05])[0]
         self.married_age = max(18,
                                random.choices(population=[22, 25, 29, 33, 37, 41, 1000],
-                                              weights=[0.20, 0.10, 0.10, 0.1, 0.1, 0.05, 0.35])[0]
+                                              weights=[0.20, 0.15, 0.15, 0.1, 0.1, 0.05, 0.25])[0]
                                + int(random.uniform(-3, 3))
                                )
 
@@ -102,7 +102,7 @@ class human:
                 self.education = 'high school degree'
                 self.job_class = 1
             elif self.age >= 21:
-                p = sig(self.upbringing_score/5+0.5)
+                p = 0.2 + 0.4 * sig(self.upbringing_score/5)
                 if p > random.uniform(0, 1):
                     self.education = 'college graduate'
                     self.job_class = min(max(2, self.job_class + 1), 6)
@@ -112,7 +112,7 @@ class human:
         elif self.age < 17 or self.age > 40:
             return None
         elif 17 <= self.age <= 21:
-            p = sig(self.upbringing_score/5+0.5)
+            p = 0.25 + 0.2 * sig(self.upbringing_score/5)
             dice_roll = random.uniform(0, 1)
             if self.education == 'uneducated' and p > dice_roll:
                 self.education = 'high school degree'
@@ -121,12 +121,12 @@ class human:
                 self.education = 'attending college'
                 self.job_class = 1
         elif 24 <= self.age <= 26 and self.education == 'college graduate':
-            p = sig(self.upbringing_score/5 - 1)
+            p = 0.05 + 0.15 * sig(self.upbringing_score/5)
             if p > random.uniform(0, 1):
                 self.education = 'postbaccalaureate degree'
                 self.job_class = min(max(4, self.job_class + 1), 6)
-        elif self.education == 'college graduate' and self.job_class >= 3:
-            if 0.03 > random.uniform(0, 1):
+        elif self.education == 'college graduate' and self.job_class >= 3 and self.age <= 40:
+            if 0.01 > random.uniform(0, 1):
                 self.education = 'postbaccalaureate degree'
                 self.job_class = min(max(4, self.job_class + 1), 6)
 
