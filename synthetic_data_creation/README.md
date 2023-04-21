@@ -35,14 +35,14 @@ household -->|Has History Of| claim
 - [x] Add process for determining how many miles each person drives  
 - [x] Confirm spouse age process is working right
 - [x] Add process for agging vehicles
-- [ ] Add process for populating years own at new business time
+- [x] Add process for populating years own at new business time
 - [x] Add process for household picking insurance coverages  
 - [x] Add "insurance coverage at the time" to claims data  
 - [x] Write coverage specific logic for determining when claims occur  
 - [x] Handle coverages that aren't mileage based, so need to only occur once per household instead of once per driver
 - [x] Figure out how subsequent loss fields should be marked
 - [x] Build way to export data to Weights & Bias  
-- [ ] Add "all vehicles" to the exported data
+- [x] Add "all vehicles" to the exported data
 - [x] Write metadata on all fields  
 - [ ] Update metadata file with additional fields
 - [x] Run code profiler and figure out if anything is running too much

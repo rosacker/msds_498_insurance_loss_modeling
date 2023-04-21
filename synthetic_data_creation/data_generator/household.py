@@ -35,6 +35,15 @@ class household:
         self.update_house()
         self.update_vehicles()
 
+
+        # Have to come up with how long they've owned the car!
+        for veh in self.vehicles:
+            if veh.age == 0:
+                veh.years_owned = 0
+            
+            else:
+                veh.years_owned = int(random.randint(0, veh.age))   
+
     def __hash__(self):
         return hash(self.id)
 
@@ -584,6 +593,12 @@ class household:
         vehicle_info = results.pop('vehicle_info')
         mileage_info = self.summarize_mileage('veh')
 
+        selection = ['vehicle_id', 'vehicle_age', 'vehicle_years_owned', 'vehicle_type']
+        household_vehicle_info = [
+            {key:value for key,value in x.items() if key in selection}
+            for x in vehicle_info
+            ]
+
         summary = [dict(results,
                         **x,
                         annual_mileage = max(1000, round([value for key, value in mileage_info.items() if key.id == x['vehicle_id']][0], -3) + 
@@ -593,6 +608,7 @@ class household:
                             y for y in claims_info if y['vehicle_id'] == x['vehicle_id']],
                         other_claims=[
                             y for y in claims_info if y['vehicle_id'] != x['vehicle_id']],
+                        household_vehicles_info = [dict(y, this_vehicle_ind = y['vehicle_id'] == x['vehicle_id']) for y in household_vehicle_info]
                         )
                    for x in vehicle_info]
 
