@@ -2,10 +2,6 @@
 
 A main challenge in this project is finding appropriate data. The type of data that would ideally be used is not freely available publicly. For that reason, we decided to instead make synthetic data. This folder of the project captures the python scripts used to build that data.
 
-## Entity-Relationship Diagram 
-
-<img src="./ER Diagram for Data.svg">
-
 ## High Level Class Structure
 
 ```mermaid
@@ -21,28 +17,3 @@ human & vehicle -->|cause| claim[Claims]
 household -->|Has History Of| claim
 
 ```
-
-## To Do  
-
-- [x] Rebalance the driver hazard attribute to be normally distributed  
-- [x] Rebalance relationship between risk scores
-- [x] Add process to determine vehicle preference for each driver
-- [x] Add process for assigning drivers to vehicles
-- [x] Add process for prorating mileage to vehicles based on assignments
-- [x] Add process for a household buying cars  
-- [x] Add process for a household selling/losing cars  
-- [ ] Looks back at household finances
-- [x] Add process for determining how many miles each person drives  
-- [x] Confirm spouse age process is working right
-- [x] Add process for agging vehicles
-- [x] Add process for populating years own at new business time
-- [x] Add process for household picking insurance coverages  
-- [x] Add "insurance coverage at the time" to claims data  
-- [x] Write coverage specific logic for determining when claims occur  
-- [x] Handle coverages that aren't mileage based, so need to only occur once per household instead of once per driver
-- [x] Figure out how subsequent loss fields should be marked
-- [x] Build way to export data to Weights & Bias  
-- [x] Add "all vehicles" to the exported data
-- [x] Write metadata on all fields  
-- [x] Update metadata file with additional fields
-- [x] Run code profiler and figure out if anything is running too much
