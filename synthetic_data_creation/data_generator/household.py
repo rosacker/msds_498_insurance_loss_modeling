@@ -295,20 +295,22 @@ class household:
         vehicles = []
 
         for i in range(n):    
-            age = int(random.uniform(0, 25))
+            age = int(random.triangular(0, 25, 5))
             vehicle_type = random.choice(['pickup', 'suv', 'sedan', 'sports car', 'van'])
             vehicles.append(vehicle(self, age, vehicle_type))
         
         return frozenset(vehicles)
     
-    def generate_veh_list(self, add_car, remove_car):
+    def generate_veh_list(self, add_car, remove_car_n):
         vehicles = self.vehicles.copy()
-
-        # Randomly remove 1 car
-        if remove_car:
-            ids = len(vehicles)
-            id = random.choice(range(ids))
-            vehicles = [x for i, x in enumerate(vehicles) if i != id]
+        
+        if remove_car_n > 0:
+            for i in range (remove_car_n):
+                if len(vehicles) == 1:
+                    break
+                ids = len(vehicles)
+                id = random.choice(range(ids))
+                vehicles = [x for i, x in enumerate(vehicles) if i != id]
 
         # Randomly add 1 car
         if add_car:
@@ -329,7 +331,7 @@ class household:
             return -500
                 
         drivers = self.drivers
-        if abs(len(drivers)- len(vehicles)) > 2:
+        if abs(len(drivers) - len(vehicles)) > 2:
             return -250
         
         prefs = {(driver, veh): driver.vehicle_interest(veh, vehicles) for veh in vehicles for driver in drivers}
@@ -340,11 +342,8 @@ class household:
             driver, veh = key
             match_score += value * allocation[key]
 
-        if len(drivers) > len(vehicles):
-            match_score += -1.0 * (len(drivers) - len(vehicles))
-
-        if len(drivers) + 2 <= len(vehicles):    
-            match_score += -1.0 * (len(vehicles) - len(drivers))
+        if len(drivers) != len(vehicles):
+            match_score += -1.0 * (len(drivers) - len(vehicles)) ** 2
 
         # No one likes a giant army of matching cars
         unique_types = len(set([x.vehicle_type for x in vehicles]))
@@ -406,9 +405,12 @@ class household:
 
             options = [
                 frozenset(self.vehicles), 
-                *[self.generate_veh_list(add_car = True, remove_car = True) for i in range(5)],
-                *[self.generate_veh_list(add_car = True, remove_car = False) for i in range(5)],
-                *[self.generate_veh_list(add_car = False, remove_car = True) for i in range(3)],
+                *[self.generate_veh_list(add_car = True, remove_car_n = 0) for i in range(5)],
+                *[self.generate_veh_list(add_car = True, remove_car_n = 1) for i in range(3)],
+                *[self.generate_veh_list(add_car = True, remove_car_n = 2) for i in range(3)],
+                *[self.generate_veh_list(add_car = False, remove_car_n = 1) for i in range(3)],
+                *[self.generate_veh_list(add_car = False, remove_car_n = 2) for i in range(1)],
+                *[self.generate_veh_list(add_car = False, remove_car_n = 3) for i in range(1)],
                 ]
 
         options = [list(x) for x in set(options)]

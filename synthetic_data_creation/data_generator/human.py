@@ -40,7 +40,7 @@ class human:
                                            0.7, 0.1, 0.1, 0.05, 0.05])[0]
         self.married_age = max(18,
                                random.choices(population=[22, 25, 29, 33, 37, 41, 1000],
-                                              weights=[0.25, 0.15, 0.15, 0.1, 0.1, 0.1, 0.15])[0]
+                                              weights=[0.20, 0.10, 0.10, 0.1, 0.1, 0.05, 0.35])[0]
                                + int(random.uniform(-3, 3))
                                )
 
